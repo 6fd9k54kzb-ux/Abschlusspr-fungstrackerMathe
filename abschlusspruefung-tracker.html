@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Prüfungs-Tracker">
+<title>Abschlussprüfungs-Tracker</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --bg:#f2f1ec;
+  --card:#ffffff;
+  --border:#e3e2dd;
+  --text:#1c1c1a;
+  --muted:#6e6e68;
+  --subtle:#a0a09a;
+  --radius:14px;
+  --radius-sm:9px;
+
+  --c0-bg:#ebebea;--c0-fg:#7a7a74;
+  --c1-bg:#fee2e2;--c1-fg:#b91c1c;
+  --c2-bg:#fef3c7;--c2-fg:#a16207;
+  --c3-bg:#dbeafe;--c3-fg:#1d4ed8;
+  --c4-bg:#d1fae5;--c4-fg:#065f46;
+
+  --teams-bg:#eff6ff;--teams-fg:#1d4ed8;
+  --trainer-bg:#fef9ee;--trainer-fg:#a16207;
+
+  --green:#059669;
+}
+
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#161614;--card:#1f1f1d;--border:#2c2c2a;
+    --text:#f0efe9;--muted:#9a9a94;--subtle:#5a5a54;
+    --c0-bg:#2a2a28;--c0-fg:#8a8a84;
+    --c1-bg:#3f1212;--c1-fg:#f87171;
+    --c2-bg:#3a2800;--c2-fg:#fbbf24;
+    --c3-bg:#0c1f3f;--c3-fg:#60a5fa;
+    --c4-bg:#052e1c;--c4-fg:#34d399;
+    --teams-bg:#0c1f3f;--teams-fg:#60a5fa;
+    --trainer-bg:#3a2800;--trainer-fg:#fbbf24;
+    --green:#34d399;
+  }
+}
+
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue',Arial,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;min-height:100dvh;
+  -webkit-text-size-adjust:100%;
+}
+
+/* ── Header ── */
+.header{
+  background:var(--card);
+  border-bottom:1px solid var(--border);
+  padding:max(env(safe-area-inset-top,0px) + 12px, 14px) 16px 12px;
+  position:sticky;top:0;z-index:20;
+}
+.header-row{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:12px}
+.h-title{font-size:17px;font-weight:700;letter-spacing:-.4px}
+.h-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px}
+.stat{background:var(--bg);border-radius:var(--radius-sm);padding:8px 10px}
+.stat-val{font-size:19px;font-weight:700;line-height:1}
+.stat-val span{font-size:12px;font-weight:400;color:var(--muted)}
+.stat-label{font-size:10px;color:var(--muted);margin-top:3px}
+.stat-val.ok{color:var(--green)}
+.pbar-wrap{height:5px;background:var(--border);border-radius:3px;overflow:hidden}
+.pbar{height:100%;width:0%;background:var(--green);border-radius:3px;transition:width .4s ease}
+
+/* ── Legend ── */
+.legend{
+  background:var(--card);border-bottom:1px solid var(--border);
+  padding:8px 16px;display:flex;flex-wrap:wrap;gap:5px;align-items:center;
+}
+.leg-label{font-size:10px;color:var(--subtle);margin-right:2px;flex-shrink:0}
+.leg-item{font-size:10px;font-weight:600;padding:3px 9px;border-radius:20px}
+
+/* ── Cards ── */
+.main{padding:10px 10px 10px;display:flex;flex-direction:column;gap:8px}
+@media(min-width:560px){.main{padding:14px;max-width:740px;margin:0 auto;gap:10px}}
+
+.year-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.year-head{display:flex;align-items:center;gap:8px;padding:10px 14px 9px;border-bottom:1px solid var(--border)}
+.year-num{font-size:17px;font-weight:700;letter-spacing:-.3px}
+.src-badge{font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;letter-spacing:.3px}
+.year-prog{margin-left:auto;font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums}
+
+.parts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(86px,1fr));gap:6px;padding:10px}
+@media(min-width:420px){.parts-grid{grid-template-columns:repeat(auto-fill,minmax(96px,1fr))}}
+@media(min-width:560px){.parts-grid{grid-template-columns:repeat(6,1fr)}}
+
+.part-btn{
+  width:100%;min-height:58px;
+  border:none;border-radius:var(--radius-sm);
+  cursor:pointer;padding:8px 4px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;
+  -webkit-tap-highlight-color:transparent;
+  transition:transform .12s,opacity .12s;
+  user-select:none;-webkit-user-select:none;
+  touch-action:manipulation;
+}
+.part-btn:active{transform:scale(.93);opacity:.8}
+.part-name{font-size:10.5px;font-weight:600;text-align:center;line-height:1.25;color:inherit}
+.part-status{font-size:17px;font-weight:700;line-height:1}
+
+.s0{background:var(--c0-bg);color:var(--c0-fg)}
+.s1{background:var(--c1-bg);color:var(--c1-fg)}
+.s2{background:var(--c2-bg);color:var(--c2-fg)}
+.s3{background:var(--c3-bg);color:var(--c3-fg)}
+.s4{background:var(--c4-bg);color:var(--c4-fg)}
+
+/* ── Footer ── */
+.footer{padding:20px 16px calc(20px + env(safe-area-inset-bottom,0px));text-align:center}
+.reset-btn{font-size:12px;color:var(--subtle);background:none;border:1px solid var(--border);cursor:pointer;padding:9px 20px;border-radius:20px}
+.reset-btn:active{background:var(--border)}
+
+/* ── Modal (custom confirm) ── */
+.modal-bg{
+  display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);
+  z-index:100;align-items:center;justify-content:center;padding:20px;
+}
+.modal-bg.open{display:flex}
+.modal{background:var(--card);border-radius:var(--radius);padding:22px 20px 16px;max-width:320px;width:100%;box-shadow:0 8px 40px rgba(0,0,0,.18)}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.modal-msg{font-size:13px;color:var(--muted);line-height:1.5;margin-bottom:20px}
+.modal-btns{display:flex;gap:8px}
+.modal-cancel{flex:1;padding:11px;border:1px solid var(--border);border-radius:var(--radius-sm);background:none;font-size:14px;cursor:pointer;color:var(--text)}
+.modal-confirm{flex:1;padding:11px;border:none;border-radius:var(--radius-sm);background:#dc2626;color:#fff;font-size:14px;font-weight:600;cursor:pointer}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-row">
+    <div>
+      <div class="h-title">Abschlussprüfungs-Tracker</div>
+      <div class="h-sub">Tippe auf ein Fach, um den Status zu ändern</div>
+    </div>
+  </div>
+  <div class="stats" id="stats"></div>
+  <div class="pbar-wrap"><div class="pbar" id="pbar"></div></div>
+</header>
+
+<div class="legend" id="legend"></div>
+
+<main class="main" id="main"></main>
+
+<footer class="footer">
+  <button class="reset-btn" onclick="openModal()">Alle Fortschritte zurücksetzen</button>
+</footer>
+
+<!-- Custom Modal -->
+<div class="modal-bg" id="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+  <div class="modal">
+    <div class="modal-title" id="modal-title">Zurücksetzen?</div>
+    <div class="modal-msg">Alle eingetragenen Fortschritte werden gelöscht. Das kann nicht rückgängig gemacht werden.</div>
+    <div class="modal-btns">
+      <button class="modal-cancel" onclick="closeModal()">Abbrechen</button>
+      <button class="modal-confirm" onclick="confirmReset()">Zurücksetzen</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const YEARS = [
+  {year:2013,source:'Teams',   hasOT:false},
+  {year:2015,source:'Teams',   hasOT:false},
+  {year:2016,source:'Teams',   hasOT:false},
+  {year:2017,source:'Teams',   hasOT:false},
+  {year:2018,source:'Trainer', hasOT:true },
+  {year:2019,source:'Trainer', hasOT:true },
+  {year:2020,source:'Trainer', hasOT:true },
+  {year:2021,source:'Trainer', hasOT:true },
+  {year:2022,source:'Trainer', hasOT:true },
+  {year:2023,source:'Trainer', hasOT:true },
+  {year:2024,source:'Teams',   hasOT:true },
+];
+
+const ALL_PARTS = [
+  {id:'ot',  name:'Ohne TR',   full:'Ohne Taschenrechner'},
+  {id:'fkt', name:'Funktionen',full:'Funktionen'},
+  {id:'fin', name:'Finanzm.',  full:'Finanzmathematik'},
+  {id:'dat', name:'D\u00a0&\u00a0Zufall',full:'Daten und Zufall'},
+  {id:'rau', name:'Raum\u00a0&\u00a0F.',full:'Raum und Form'},
+  {id:'tri', name:'Trigon.',   full:'Trigonometrie'},
+];
+
+const STATES = [
+  {label:'\u2013', cls:'s0', desc:'Noch nicht gemacht'},
+  {label:'\u2717', cls:'s1', desc:'Lief gar nicht'},
+  {label:'\u2248', cls:'s2', desc:'Nicht so gut'},
+  {label:'\u25ce', cls:'s3', desc:'Lief okay'},
+  {label:'\u2713', cls:'s4', desc:'Lief gut'},
+];
+
+const KEY = 'abschlusspruefung_tracker_v2';
+let data = {};
+
+function partsFor(y){return ALL_PARTS.filter(p => p.id !== 'ot' || y.hasOT)}
+
+function initData(){
+  const d={};
+  YEARS.forEach(y=>{d[y.year]={};partsFor(y).forEach(p=>{d[y.year][p.id]=0;});});
+  return d;
+}
+
+function load(){
+  try{const s=localStorage.getItem(KEY);data=s?JSON.parse(s):initData();}
+  catch{data=initData();}
+}
+
+function save(){try{localStorage.setItem(KEY,JSON.stringify(data));}catch{}}
+
+function tick(year,pid){
+  data[year][pid]=(data[year][pid]+1)%5;
+  save();
+  updateCard(year);
+  updateStats();
+}
+
+function allVals(){return YEARS.flatMap(y=>partsFor(y).map(p=>data[y.year]?.[p.id]??0))}
+
+function updateStats(){
+  const vals=allVals();
+  const total=vals.length, done=vals.filter(v=>v>0).length, gut=vals.filter(v=>v===4).length;
+  const pct=total?Math.round(done/total*100):0;
+  document.getElementById('stats').innerHTML=`
+    <div class="stat">
+      <div class="stat-val">${done}<span> / ${total}</span></div>
+      <div class="stat-label">Bearbeitet</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val ok">${gut}<span> / ${total}</span></div>
+      <div class="stat-label">Lief gut</div>
+    </div>
+    <div class="stat">
+      <div class="stat-val">${pct}<span>%</span></div>
+      <div class="stat-label">Fortschritt</div>
+    </div>`;
+  document.getElementById('pbar').style.width=pct+'%';
+}
+
+function updateCard(year){
+  const y=YEARS.find(y=>y.year===year);
+  const parts=partsFor(y);
+  const done=parts.filter(p=>(data[year]?.[p.id]??0)>0).length;
+  const prog=document.getElementById('prog-'+year);
+  if(prog)prog.textContent=done+' / '+parts.length;
+  parts.forEach(p=>{
+    const btn=document.getElementById('btn-'+year+'-'+p.id);
+    if(!btn)return;
+    const st=data[year]?.[p.id]??0, s=STATES[st];
+    btn.className='part-btn '+s.cls;
+    btn.querySelector('.part-status').textContent=s.label;
+    btn.setAttribute('aria-label',year+' '+p.full+' \u2013 '+s.desc);
+  });
+}
+
+function buildLegend(){
+  document.getElementById('legend').innerHTML=
+    '<span class="leg-label">Tippen zum Wechseln:</span>'+
+    STATES.slice(1).map(s=>`<span class="leg-item ${s.cls}">${s.desc}</span>`).join('');
+}
+
+function buildCards(){
+  document.getElementById('main').innerHTML=YEARS.map(y=>{
+    const parts=partsFor(y);
+    const done=parts.filter(p=>(data[y.year]?.[p.id]??0)>0).length;
+    const srcStyle=y.source==='Teams'
+      ?'background:var(--teams-bg);color:var(--teams-fg)'
+      :'background:var(--trainer-bg);color:var(--trainer-fg)';
+    const cells=parts.map(p=>{
+      const st=data[y.year]?.[p.id]??0, s=STATES[st];
+      return`<button class="part-btn ${s.cls}" id="btn-${y.year}-${p.id}"
+        onclick="tick(${y.year},'${p.id}')"
+        aria-label="${y.year} ${p.full} \u2013 ${s.desc}">
+        <span class="part-name">${p.name}</span>
+        <span class="part-status">${s.label}</span>
+      </button>`;
+    }).join('');
+    return`<div class="year-card">
+      <div class="year-head">
+        <span class="year-num">${y.year}</span>
+        <span class="src-badge" style="${srcStyle}">${y.source}</span>
+        <span class="year-prog" id="prog-${y.year}">${done} / ${parts.length}</span>
+      </div>
+      <div class="parts-grid">${cells}</div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(){document.getElementById('modal').classList.add('open')}
+function closeModal(){document.getElementById('modal').classList.remove('open')}
+function confirmReset(){data=initData();save();buildCards();updateStats();closeModal();}
+
+document.getElementById('modal').addEventListener('click',function(e){
+  if(e.target===this)closeModal();
+});
+
+load();
+buildLegend();
+buildCards();
+updateStats();
+</script>
+</body>
+</html>
