@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AP 2025 – Lösungskontrolle</title>
+<style>
+  :root {
+    --bg: #f7f9f4;
+    --card: #ffffff;
+    --border: #d4dbc8;
+    --green: #3a7d44;
+    --green-light: #e8f5eb;
+    --red: #c0392b;
+    --red-light: #fdecea;
+    --text: #1a2210;
+    --muted: #6b7c5e;
+    --accent: #4a6741;
+    --hint-bg: #f0f4ed;
+    --font-main: 'Georgia', serif;
+    --font-ui: 'Helvetica Neue', Arial, sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font-ui); min-height: 100vh; padding: 0 0 60px; }
+
+  header { background: var(--accent); color: white; padding: 28px 24px 22px; text-align: center; }
+  header .eyebrow { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; opacity: 0.75; margin-bottom: 6px; }
+  header h1 { font-family: var(--font-main); font-size: 22px; font-weight: normal; line-height: 1.3; }
+  header .subtitle { font-size: 13px; opacity: 0.8; margin-top: 4px; }
+
+  .progress-bar-wrap { background: #d4dbc8; height: 6px; }
+  .progress-bar { background: var(--green); height: 6px; width: 0%; transition: width 0.4s ease; }
+
+  .score-summary { display: flex; justify-content: center; gap: 28px; padding: 16px 24px; background: white; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--muted); flex-wrap: wrap; }
+  .score-summary span strong { color: var(--text); font-size: 15px; }
+
+  .sections { max-width: 700px; margin: 0 auto; padding: 20px 16px 0; display: flex; flex-direction: column; gap: 16px; }
+
+  .section-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; overflow: hidden; }
+  .section-header { display: flex; align-items: center; gap: 12px; padding: 14px 16px; cursor: pointer; background: #f2f5ef; border-bottom: 1px solid var(--border); user-select: none; }
+  .section-header:hover { background: #e8ede4; }
+  .section-tag { background: var(--accent); color: white; font-size: 11px; font-weight: bold; padding: 3px 8px; border-radius: 4px; flex-shrink: 0; }
+  .section-title { font-size: 14px; font-weight: 600; flex: 1; }
+  .section-pts { font-size: 12px; color: var(--muted); flex-shrink: 0; }
+  .section-chevron { font-size: 12px; color: var(--muted); transition: transform 0.2s; flex-shrink: 0; }
+  .section-card.open .section-chevron { transform: rotate(180deg); }
+  .section-body { display: none; padding: 0; }
+  .section-card.open .section-body { display: block; }
+
+  /* Task row */
+  .task-row { padding: 14px 16px; border-bottom: 1px solid #f0f3ec; }
+  .task-row:last-child { border-bottom: none; }
+  .task-header { display: flex; align-items: flex-start; gap: 10px; margin-bottom: 8px; }
+  .task-num { font-size: 12px; font-weight: 700; color: var(--accent); min-width: 32px; padding-top: 2px; flex-shrink: 0; }
+  .task-label { font-size: 13px; color: var(--muted); line-height: 1.4; }
+
+  /* Parts (multiple inputs per task) */
+  .parts-wrap { margin-left: 42px; display: flex; flex-direction: column; gap: 8px; }
+  .part-row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .part-label { font-size: 12px; font-weight: 600; color: var(--text); min-width: 160px; flex-shrink: 0; }
+
+  .input-wrap { display: flex; align-items: center; gap: 8px; }
+  .answer-input { border: 1.5px solid var(--border); border-radius: 6px; padding: 7px 10px; font-size: 14px; font-family: var(--font-ui); background: #fafbf8; color: var(--text); transition: border-color 0.2s; width: 150px; }
+  .answer-input:focus { outline: none; border-color: var(--accent); background: white; }
+  .answer-input.correct { border-color: var(--green); background: var(--green-light); }
+  .answer-input.wrong { border-color: var(--red); background: var(--red-light); }
+
+  .check-btn { background: var(--accent); color: white; border: none; border-radius: 6px; padding: 7px 14px; font-size: 13px; cursor: pointer; flex-shrink: 0; transition: background 0.15s; }
+  .check-btn:hover { background: #3a5633; }
+  .check-btn.multi-btn { margin-top: 4px; margin-left: 0; }
+
+  .result-icon { font-size: 17px; flex-shrink: 0; min-width: 22px; }
+
+  /* Single-input tasks: keep inline */
+  .single-input-row { display: flex; align-items: center; gap: 8px; margin-left: 42px; }
+
+  .hint-box { display: none; margin-top: 10px; margin-left: 42px; background: var(--hint-bg); border-left: 3px solid var(--accent); border-radius: 0 6px 6px 0; padding: 10px 12px; font-size: 13px; line-height: 1.6; color: #2a3d22; }
+  .hint-box.show { display: block; }
+  .hint-box strong { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; color: var(--accent); }
+  .hint-box .step { margin-top: 4px; }
+  .hint-box .math { font-family: 'Georgia', serif; font-style: italic; background: white; border-radius: 4px; padding: 2px 6px; margin: 2px 0; display: inline-block; font-size: 13px; }
+
+  .reset-btn { display: block; margin: 28px auto 0; background: transparent; color: var(--muted); border: 1.5px solid var(--border); border-radius: 8px; padding: 10px 28px; font-size: 13px; cursor: pointer; }
+  .reset-btn:hover { background: white; color: var(--text); }
+
+  .final-score { display: none; max-width: 700px; margin: 20px auto 0; background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px 24px; text-align: center; }
+  .final-score h2 { font-family: var(--font-main); font-size: 20px; margin-bottom: 8px; }
+  .final-score .big-note { font-size: 52px; font-family: var(--font-main); font-weight: bold; color: var(--accent); line-height: 1; }
+  .final-score .note-label { font-size: 13px; color: var(--muted); margin-top: 4px; }
+  .final-score .pts-info { margin-top: 10px; font-size: 14px; }
+  .notenschluessel { margin-top: 12px; font-size: 12px; color: var(--muted); line-height: 1.8; }
+
+  @media (max-width: 480px) {
+    .answer-input { width: 120px; }
+    .part-label { min-width: 120px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Wirtschaftsschule Bayern</div>
+  <h1>Abschlussprüfung Mathematik 2025</h1>
+  <div class="subtitle">Gib deine Ergebnisse ein – bei Fehlern siehst du den Lösungsweg</div>
+</header>
+<div class="progress-bar-wrap"><div class="progress-bar" id="progressBar"></div></div>
+
+<div class="score-summary">
+  <span>Eingaben: <strong id="countDone">0</strong> / <span id="countTotal">0</span></span>
+  <span>Richtig: <strong id="countCorrect" style="color:var(--green)">0</strong></span>
+  <span>Falsch: <strong id="countWrong" style="color:var(--red)">0</strong></span>
+</div>
+
+<div class="sections" id="sectionsContainer"></div>
+<button class="reset-btn" onclick="resetAll()">↺ Alle Eingaben zurücksetzen</button>
+
+<div class="final-score" id="finalScore">
+  <h2>Deine Note</h2>
+  <div class="big-note" id="finalGrade">–</div>
+  <div class="note-label" id="finalGradeLabel"></div>
+  <div class="pts-info" id="finalPtsInfo"></div>
+  <div class="notenschluessel">
+    75–64,5 Pkt → Note 1 &nbsp;|&nbsp; 64–53 Pkt → Note 2 &nbsp;|&nbsp; 52,5–42 Pkt → Note 3<br>
+    41,5–30,5 Pkt → Note 4 &nbsp;|&nbsp; 30–15 Pkt → Note 5 &nbsp;|&nbsp; 14,5–0 Pkt → Note 6
+  </div>
+</div>
+
+<script>
+// ─── DATA ───────────────────────────────────────────────────────────────────
+// Each task has either:
+//   answers: [...] → single input
+//   parts: [ { label, answers }, ... ] → multiple inputs, each with own label
+// ─────────────────────────────────────────────────────────────────────────────
+const DATA = [
+  {
+    id: "ohne", tag: "Pflicht", title: "Block ohne Wahlmöglichkeit (Ohne Taschenrechner)", pts: 7,
+    tasks: [
+      {
+        id: "1",
+        label: "Aufgabe 1: Familienkarte",
+        parts: [
+          { label: "Eintritt ohne Familienkarte (€):", answers: ["27", "27,00", "27.00", "27 euro"] },
+          { label: "Eintritt mit Familienkarte (€):", answers: ["26", "26,00", "26.00"] },
+          { label: "Ist die Familienkarte günstiger?", answers: ["ja", "ja günstiger", "familienkarte ist günstiger"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Geburtstagskind: 50 % von 8,00 € = <span class="math">4,00 €</span></div>
+<div class="step">Ohne Familienkarte: 4,00 + 15,00 + 8,00 + 0,00 = <span class="math">27,00 €</span></div>
+<div class="step">Mit Familienkarte: <span class="math">26,00 €</span></div>
+<div class="step">→ Die Familienkarte ist günstiger (spart 1 €).</div>`
+      },
+      {
+        id: "2",
+        label: "Aufgabe 2: Dreieck aus dem Seil",
+        parts: [
+          { label: "Gesamtlänge des Seils (m):", answers: ["12", "12 m", "12,0"] },
+          { label: "Ist das Dreieck rechtwinklig?", answers: ["ja", "rechtwinklig", "ja rechtwinklig"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">3 + 4 + 5 = <span class="math">12 m</span> ✓ (Seil reicht genau)</div>
+<div class="step">Pythagoras: <span class="math">3² + 4² = 9 + 16 = 25 = 5²</span></div>
+<div class="step">→ Das Dreieck ist rechtwinklig.</div>`
+      },
+      {
+        id: "3.1",
+        label: "Aufgabe 3.1: Scheitelpunkt und Parabelform",
+        parts: [
+          { label: "Scheitelpunkt S₁ (x-Koordinate):", answers: ["5"] },
+          { label: "Scheitelpunkt S₁ (y-Koordinate):", answers: ["3"] },
+          { label: "Scheitelpunktform p₁:", answers: ["y=-0,06(x-5)^2+3","y=-0,06(x-5)²+3","y = -0,06(x-5)²+3","-0,06(x-5)²+3"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Scheitelpunkt aus Zeichnung ablesen: <span class="math">S₁(5 | 3)</span></div>
+<div class="step">Scheitelpunktform: <span class="math">p₁: y = –0,06 · (x – 5)² + 3</span></div>`
+      },
+      {
+        id: "3.2",
+        label: "Aufgabe 3.2: Gleichung p₂",
+        answers: ["y=-0,5x^2+2x+1,5","y=-0,5x²+2x+1,5","-0,5x²+2x+1,5","y = -0,5x²+2x+1,5"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Ergebnis: <span class="math">p₂: y = –0,5x² + 2x + 1,5</span></div>`
+      },
+      {
+        id: "4",
+        label: "Aufgabe 4: Fehler im Dokument",
+        parts: [
+          { label: "Falscher Wert (€):", answers: ["15400","15.400","15400,00","15.400,00"] },
+          { label: "Richtiger Wert (€):", answers: ["16000","16.000","16000,00","16.000,00"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Im Dokument steht: <span class="math">15.400,00 €</span> – das ist falsch.</div>
+<div class="step">Richtiger Wert: <span class="math">16.000,00 €</span></div>`
+      }
+    ]
+  },
+  {
+    id: "w1", tag: "Wahlblock 1", title: "Trigonometrie (Kurzaufgaben)", pts: 4,
+    tasks: [
+      {
+        id: "1.1", label: "1.1: Multiple Choice – welche Lösung ist richtig?",
+        answers: ["c","lösung c","C"],
+        hint: `<strong>Lösung</strong><div class="step">Richtig: <span class="math">Lösung C</span></div>`
+      },
+      {
+        id: "1.2", label: "1.2: Seite |BC| berechnen",
+        answers: ["9","9 cm","9,0"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Sinussatz: <span class="math">|BC| / sin 70° = 5 / sin 30°</span></div>
+<div class="step"><span class="math">|BC| = 10 · 0,9 = 9 cm</span></div>`
+      },
+      {
+        id: "1.3", label: "1.3: Skizze korrekt beschriftet? (α, 90°, Seiten 3 und 5)",
+        answers: ["ja","richtig","korrekt","ja richtig"],
+        hint: `<strong>Lösung</strong>
+<div class="step">Rechtwinkliges Dreieck mit Winkel <span class="math">α</span>, 90°-Winkel, Gegenkathete 3 und Hypotenuse 5.</div>`
+      }
+    ]
+  },
+  {
+    id: "w2", tag: "Wahlblock 2", title: "Daten und Zufall (Kurzaufgaben)", pts: 4,
+    tasks: [
+      {
+        id: "2.1", label: "2.1: Wahrscheinlichkeit P(E) = ?",
+        answers: ["1/45","2/90","0,022","0,0222","2,22%","1/45"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">P(L 1. Zug) = <span class="math">2/10</span>, P(L 2. Zug) = <span class="math">1/9</span></div>
+<div class="step"><span class="math">P(E) = 2/10 · 1/9 = 2/90 = 1/45</span></div>`
+      },
+      {
+        id: "2.2", label: "2.2: Bildschirmzeit 10. Klasse = ? (Minuten)",
+        answers: ["250","250 minuten","250 min"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Durchschnitt gesamt: <span class="math">160 · 6 = 960 Min.</span></div>
+<div class="step">Klassen 5–9: <span class="math">100+110+120+180+200 = 710 Min.</span></div>
+<div class="step">10. Klasse: <span class="math">960 – 710 = 250 Min.</span></div>`
+      }
+    ]
+  },
+  {
+    id: "w3b", tag: "Wahlblock 3", title: "Raum und Form (Kurzaufgaben)", pts: 4,
+    tasks: [
+      {
+        id: "3.1b", label: "3.1 (Wahlblock): Länge x = ?",
+        answers: ["18","18 m","18,0"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Strahlensatz: <span class="math">x / 1,80 = (18+2) / 2 = 10</span></div>
+<div class="step"><span class="math">x = 18 m</span></div>`
+      },
+      {
+        id: "3.2b", label: "3.2 (Wahlblock): Radius der Kugel r = ?",
+        answers: ["10","10 cm"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">4.000 = 4/3 · r³ · 3 = 4 · r³</span></div>
+<div class="step"><span class="math">r³ = 1.000 → r = 10 cm</span></div>`
+      }
+    ]
+  },
+  {
+    id: "fin", tag: "Teil 1", title: "1 Finanzmathematik", pts: 15,
+    tasks: [
+      {
+        id: "1.1",
+        label: "1.1: Jährlicher Zinssatz",
+        parts: [
+          { label: "Einzahlungsbetrag pro Jahr (€):", answers: ["45000","45.000","45000,00","45.000,00"] },
+          { label: "Zinssatz p (%):", answers: ["2,59","2.59","2,59%"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">135.000 : 3 = <span class="math">45.000 €</span></div>
+<div class="step"><span class="math">75.000 = 45.000 · q²⁰ → q = ²⁰√(75.000/45.000) = 1,0259</span></div>
+<div class="step">→ <span class="math">p = 2,59 %</span></div>`
+      },
+      {
+        id: "1.2",
+        label: "1.2: Tilgungsplan – Annuität und Restschuld",
+        parts: [
+          { label: "Annuität A (€):", answers: ["24745,14","24.745,14","24745.14","24745"] },
+          { label: "Restschuld nach Jahr 1 (€):", answers: ["270229,86","270.229,86","270229.86","270230"] },
+          { label: "Zinsen Jahr 2 (€):", answers: ["9458,05","9.458,05","9458.05","9458"] },
+          { label: "Tilgung Jahr 2 (€):", answers: ["15287,09","15.287,09","15287.09","15287"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Annuität: <span class="math">A = 285.000 · 1,035¹⁵ · 0,035 / (1,035¹⁵ – 1) = 24.745,14 €</span></div>
+<div class="step">Jahr 1: Zinsen = 285.000 · 0,035 = <span class="math">9.975,00 €</span>; Tilgung = <span class="math">14.770,14 €</span></div>
+<div class="step">Restschuld nach Jahr 1: <span class="math">270.229,86 €</span></div>
+<div class="step">Jahr 2: Zinsen = <span class="math">9.458,05 €</span>; Tilgung = <span class="math">15.287,09 €</span></div>`
+      },
+      {
+        id: "1.3",
+        label: "1.3: Restschuld nach 10 Jahren",
+        parts: [
+          { label: "K₁₀ = ? (€):", answers: ["111725,68","111.725,68","111725.68","111726"] },
+          { label: "Kann Ella die Sondertilgung leisten?", answers: ["nein","nein kann sie nicht","nicht möglich"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">K₁₀ = 285.000 · 1,035¹⁰ – 24.745,14 · (1,035¹⁰–1) / 0,035 = 111.725,68 €</span></div>
+<div class="step">111.725,68 € > 100.000 € → Ella kann die Sondertilgung <span class="math">nicht</span> leisten.</div>`
+      },
+      {
+        id: "1.4",
+        label: "1.4: Auszahlungsdauer Maurice",
+        parts: [
+          { label: "n = ? (Jahre, gerundet):", answers: ["10","10 jahre","10,16","10,16 jahre"] },
+          { label: "Interpretation: Wann kann er sich auszahlen lassen?", answers: ["nach 10 jahren","10 jahre","nach 10","10"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">0 = 45.000 · 1,018ⁿ – 4.800 · 1,018 · (1,018ⁿ–1)/(1,018–1)</span></div>
+<div class="step">Umformen: <span class="math">n = log₁,₀₁₈(271.466,67 / 226.466,67) ≈ 10,16 Jahre</span></div>
+<div class="step">→ Maurice kann sich nach <span class="math">10 Jahren</span> den vollen Betrag auszahlen lassen.</div>`
+      },
+      {
+        id: "1.5",
+        label: "1.5: Kontostand K₁₀ (Formel aufstellen – kein Ergebnis nötig)",
+        answers: ["ja","aufgestellt","formel korrekt","ok","✓"],
+        hint: `<strong>Formel</strong>
+<div class="step"><span class="math">K₁₀ = 45.000 · 1,018¹⁰ – 4.800 · 1,018 · (1,018¹⁰–1)/(1,018–1)</span></div>`
+      }
+    ]
+  },
+  {
+    id: "funk", tag: "Teil 2", title: "2 Funktionaler Zusammenhang", pts: 15,
+    tasks: [
+      {
+        id: "2.1",
+        label: "2.1: Parabel p aufstellen",
+        parts: [
+          { label: "Koeffizient b:", answers: ["6","b=6"] },
+          { label: "Koeffizient c:", answers: ["-250","c=-250","– 250"] },
+          { label: "Funktion p(x):", answers: ["y=-0,02x^2+6x-250","y=-0,02x²+6x-250","p: y=-0,02x²+6x-250","-0,02x²+6x-250"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Punkte (90|128) und (210|128) einsetzen → LGS:</div>
+<div class="step">I – II: <span class="math">0 = –120b + 720 → b = 6</span></div>
+<div class="step">b in I: <span class="math">c = –250</span></div>
+<div class="step">→ <span class="math">p: y = –0,02x² + 6x – 250</span></div>`
+      },
+      {
+        id: "2.2",
+        label: "2.2: Scheitelpunkt yₛ = ? (Höhe in m)",
+        answers: ["200","200 m","yₛ=200"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">yₛ = –250 – 6² / (4·(–0,02)) = –250 + 250 = 200 m</span></div>`
+      },
+      {
+        id: "2.3",
+        label: "2.3: Nullstellen und Spannweite",
+        parts: [
+          { label: "Nullstelle x₁ (m):", answers: ["50","50 m"] },
+          { label: "Nullstelle x₂ (m):", answers: ["250","250 m"] },
+          { label: "Spannweite w (m):", answers: ["200","200 m"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">0 = –0,02x² + 6x – 250 → Lösungsformel:</div>
+<div class="step"><span class="math">x₁ = 50 m, x₂ = 250 m</span></div>
+<div class="step">Spannweite: <span class="math">250 – 50 = 200 m</span> → originalgetreu ✓</div>`
+      },
+      {
+        id: "2.4",
+        label: "2.4: Gleichung Sekante g",
+        parts: [
+          { label: "Steigung m:", answers: ["0,9","m=0,9","0.9"] },
+          { label: "y-Achsenabschnitt t:", answers: ["47","t=47"] },
+          { label: "Gleichung g:", answers: ["y=0,9x+47","g: y=0,9x+47","0,9x+47"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Steigung: <span class="math">m = (128–29)/(90–(–20)) = 99/110 = 0,9</span></div>
+<div class="step">Punkt (90|128): <span class="math">128 = 0,9·90 + t → t = 47</span></div>
+<div class="step">→ <span class="math">g: y = 0,9x + 47</span></div>`
+      },
+      {
+        id: "2.5",
+        label: "2.5: Länge des Skywalks (m)",
+        answers: ["120","120 m"],
+        hint: `<strong>Lösungsweg</strong><div class="step"><span class="math">210 – 90 = 120 m</span></div>`
+      },
+      {
+        id: "2.6",
+        label: "2.6: Höhe bei xD = 315",
+        parts: [
+          { label: "Gleichung der Geraden h:", answers: ["y=-0,9x+317","h: y=-0,9x+317","-0,9x+317"] },
+          { label: "Höhe h(315) = ? (m):", answers: ["33,5","33,50","33.5","33.50","33,5 m","33,50 m"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Parallele zu g mit Steigung –0,9 durch Ursprungsnähe:</div>
+<div class="step"><span class="math">h: y = –0,9x + 317</span></div>
+<div class="step"><span class="math">h(315) = –0,9 · 315 + 317 = 33,5 m</span></div>`
+      }
+    ]
+  },
+  {
+    id: "trig", tag: "Teil 3", title: "3 Trigonometrie", pts: 15,
+    tasks: [
+      {
+        id: "3.1",
+        label: "3.1: Strecke |HK| berechnen",
+        answers: ["3,05","3.05","3,05 dm"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">|HK| = tan(23,41°) · 7,04 ≈ 3,05 dm</span></div>`
+      },
+      {
+        id: "3.2",
+        label: "3.2: Winkel γ und Strecke |CG|",
+        parts: [
+          { label: "|CG| = ? (dm):", answers: ["22,09","22.09","22,09 dm"] },
+          { label: "Winkel γ = ? (°):", answers: ["152,45","152.45","152,45°","152°"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">|CG| = 5,93 + 9,12 + 7,04 = <span class="math">22,09 dm</span></div>
+<div class="step">Kosinussatz: <span class="math">cos γ = (19,24² + 3,16² – 22,09²) / (2·19,24·3,16)</span></div>
+<div class="step"><span class="math">γ ≈ 152,45°</span></div>`
+      },
+      {
+        id: "3.3",
+        label: "3.3: Strecke |AB| mit dem Sinussatz",
+        parts: [
+          { label: "∠ACB = ? (°):", answers: ["62,59","62.59","62,59°"] },
+          { label: "|AB| = ? (dm):", answers: ["18","18 dm","18,0"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">∠ACB = 180° – (108,43° + 8,98°) = <span class="math">62,59°</span></div>
+<div class="step">Sinussatz: <span class="math">|AB| = 19,24 · sin 62,59° / sin 108,43° ≈ 18 dm</span></div>`
+      },
+      {
+        id: "3.4",
+        label: "3.4: Strecke |DF| (Pythagoras)",
+        answers: ["7","7 dm","7,0"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">|DF| = √(4,27² + 5,55²) = √49,03 ≈ 7 dm</span></div>`
+      },
+      {
+        id: "3.5",
+        label: "3.5: Fläche Dreieck CDF",
+        answers: ["13,48","13.48","13,48 dm²"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">A = ½ · 7 · 5,93 · sin 40,51° ≈ 13,48 dm²</span></div>`
+      },
+      {
+        id: "3.6",
+        label: "3.6: Steigung der Strecke – Rennen möglich?",
+        parts: [
+          { label: "Steigung = ? (%):", answers: ["7,71","7.71","7,71%"] },
+          { label: "Kann das Rennen stattfinden?", answers: ["ja","ja rennen möglich","ja das rennen kann stattfinden"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Steigung = <span class="math">27/350 · 100 = 7,71 %</span></div>
+<div class="step">7,71 % < 8 % → Das Rennen kann stattfinden. ✓</div>`
+      }
+    ]
+  },
+  {
+    id: "daten", tag: "Teil 4", title: "4 Daten und Zufall", pts: 15,
+    tasks: [
+      {
+        id: "4.1",
+        label: "4.1: Absolute Häufigkeit H(E₁)",
+        answers: ["20","20 spieler"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">H(E₁) = 13 + 2 + 2 + 3 = 20 Spieler</span></div>`
+      },
+      {
+        id: "4.2",
+        label: "4.2: Relative Häufigkeit h(E₂)",
+        parts: [
+          { label: "Als Bruch:", answers: ["3/8","12/32"] },
+          { label: "Als Prozent (%):", answers: ["37,5","37.5","37,50","37,50%","37,5%"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">h(E₂) = 12/32 = 3/8 = 37,5 %</span></div>`
+      },
+      {
+        id: "4.3",
+        label: "4.3: Land mit den meisten Teilnehmern (Diagramm)",
+        answers: ["england"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Aus dem Balkendiagramm: <span class="math">England</span> mit ca. 13 Teilnehmern.</div>`
+      },
+      {
+        id: "4.4",
+        label: "4.4: Statistische Kennwerte",
+        parts: [
+          { label: "Median xₘₑd (Punkte):", answers: ["99","99 punkte"] },
+          { label: "Spannweite R (Punkte):", answers: ["164","164 punkte"] },
+          { label: "Arithm. Mittel x̄ (Punkte):", answers: ["91,09","91.09","91,09 punkte"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Geordnet: 16, 26, 60, 76, 96, <span class="math">99</span>, 100, 100, 109, 140, 180</div>
+<div class="step">Median (6. Wert): <span class="math">99</span></div>
+<div class="step">Spannweite: <span class="math">180 – 16 = 164</span></div>
+<div class="step">Arithm. Mittel: <span class="math">1002 / 11 ≈ 91,09 Pkt.</span></div>`
+      },
+      {
+        id: "4.5",
+        label: "4.5: Baumdiagramm – Wahrscheinlichkeiten ablesen",
+        parts: [
+          { label: "P(Treffer) = ?", answers: ["0,11","11%","11 %","0.11"] },
+          { label: "P(kein Treffer) = ?", answers: ["0,89","89%","89 %","0.89"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Aus dem Baumdiagramm: <span class="math">P(T) = 0,11</span>, <span class="math">P(NT) = 0,89</span></div>
+<div class="step">Probe: 0,11 + 0,89 = 1 ✓</div>`
+      },
+      {
+        id: "4.6",
+        label: "4.6: P(E₃) = P(T, T, T)",
+        parts: [
+          { label: "P(E₃) als Dezimalzahl:", answers: ["0,0013","0.0013","0,001331","0.001331"] },
+          { label: "P(E₃) in Prozent (%):", answers: ["0,13","0.13","0,13%"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">P(E₃) = 0,11³ = 0,001331 ≈ 0,13 %</span></div>`
+      },
+      {
+        id: "4.7",
+        label: "4.7: P(E₄) = genau 2 Treffer",
+        parts: [
+          { label: "P(E₄) als Dezimalzahl:", answers: ["0,0323","0.0323"] },
+          { label: "P(E₄) in Prozent (%):", answers: ["3,23","3.23","3,23%"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Günstige Fälle: (T,T,NT), (T,NT,T), (NT,T,T)</div>
+<div class="step"><span class="math">P(E₄) = 3 · 0,11² · 0,89 = 3 · 0,010769 = 0,0323 ≈ 3,23 %</span></div>`
+      }
+    ]
+  },
+  {
+    id: "raum", tag: "Teil 5", title: "5 Raum und Form", pts: 15,
+    tasks: [
+      {
+        id: "5.1",
+        label: "5.1: Höhe h der quadratischen Pyramide",
+        answers: ["10,9","10,90","10.9","10.90","10,90 m"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">148,82 = ⅓ · 6,40² · h</span></div>
+<div class="step"><span class="math">h = (148,82 · 3) / 6,40² ≈ 10,90 m</span></div>`
+      },
+      {
+        id: "5.2",
+        label: "5.2: Apotheme hₛ und Mantelfläche M",
+        parts: [
+          { label: "Apotheme hₛ = ? (m):", answers: ["11,36","11.36","11,36 m"] },
+          { label: "Mantelfläche M = ? (m²):", answers: ["145,41","145.41","145,41 m²"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">hₛ = √(10,90² + 3,20²) = √129,05 ≈ 11,36 m</span></div>
+<div class="step"><span class="math">M = 4 · (11,36 · 6,40 / 2) = 145,41 m²</span></div>`
+      },
+      {
+        id: "5.3",
+        label: "5.3: Apotheme des kleinen Abschnitts hₛ'",
+        answers: ["2,49","2.49","2,49 m"],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step">Strahlensatz: <span class="math">hₛ' / 11,36 = 1,40 / 6,40</span></div>
+<div class="step"><span class="math">hₛ' = (1,40 · 11,36) / 6,40 ≈ 2,49 m</span></div>`
+      },
+      {
+        id: "5.4",
+        label: "5.4: Radius und Durchmesser der Kugel",
+        parts: [
+          { label: "Radius r = ? (cm):", answers: ["3,5","3.5","3,50","3.50","3,50 cm"] },
+          { label: "Durchmesser d₁ = ? (cm):", answers: ["7","7 cm","d1=7"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">89,80 = ½ · (4/3) · r³ · π → r³ = (89,80·3)/(2π) ≈ 42,88</span></div>
+<div class="step"><span class="math">r ≈ 3,50 cm → d₁ = 7 cm</span></div>`
+      },
+      {
+        id: "5.5",
+        label: "5.5: Kreisfläche A des Querschnitts",
+        parts: [
+          { label: "Radius r₂ = ? (cm):", answers: ["1,75","1.75","1,75 cm"] },
+          { label: "Fläche A = ? (cm²):", answers: ["9,62","9.62","9,62 cm²"] }
+        ],
+        hint: `<strong>Lösungsweg</strong>
+<div class="step"><span class="math">r₂ = 3,50 : 2 = 1,75 cm</span></div>
+<div class="step"><span class="math">A = 1,75² · π ≈ 9,62 cm²</span></div>`
+      }
+    ]
+  }
+];
+
+// ─── STATE & HELPERS ─────────────────────────────────────────────────────────
+let state = {};
+
+function normalize(s) {
+  return s.trim().toLowerCase()
+    .replace(/\s+/g, ' ')
+    .replace(/[€]/g, '')
+    .replace(/\s*(m²|m2|dm²|dm2|cm²|cm2|euro|eur|pkt\.|punkte|minuten|min|jahre|jahre|dm|cm|m)\s*$/i, '')
+    .replace(/,/g, '.')
+    .replace(/%$/,'').trim();
+}
+function checkAnswer(input, answers) {
+  const n = normalize(input);
+  return answers.some(a => normalize(a) === n);
+}
+
+// Count total "slots" (each part = 1 slot, single answer = 1 slot)
+function countSlots() {
+  let t = 0;
+  DATA.forEach(s => s.tasks.forEach(task => {
+    t += task.parts ? task.parts.length : 1;
+  }));
+  return t;
+}
+
+// ─── BUILD UI ─────────────────────────────────────────────────────────────────
+function buildUI() {
+  const container = document.getElementById('sectionsContainer');
+  container.innerHTML = '';
+  document.getElementById('countTotal').textContent = countSlots();
+
+  DATA.forEach(section => {
+    const card = document.createElement('div');
+    card.className = 'section-card';
+    card.id = 'sec-' + section.id;
+    card.innerHTML = `
+      <div class="section-header" onclick="toggleSection('${section.id}')">
+        <span class="section-tag">${section.tag}</span>
+        <span class="section-title">${section.title}</span>
+        <span class="section-pts">${section.pts} Pkt.</span>
+        <span class="section-chevron">▼</span>
+      </div>
+      <div class="section-body" id="body-${section.id}">
+        ${section.tasks.map(t => buildTaskHTML(section.id, t)).join('')}
+      </div>`;
+    container.appendChild(card);
+  });
+}
+
+function buildTaskHTML(secId, task) {
+  if (task.parts) {
+    return buildMultiTaskHTML(secId, task);
+  } else {
+    return buildSingleTaskHTML(secId, task);
+  }
+}
+
+function buildSingleTaskHTML(secId, task) {
+  const key = secId + '__' + task.id;
+  const saved = state[key];
+  const inputClass = saved ? (saved.correct ? 'correct' : 'wrong') : '';
+  const icon = saved ? (saved.correct ? '✅' : '❌') : '';
+  const hintShow = saved && !saved.correct ? 'show' : '';
+  const val = saved ? saved.value.replace(/"/g,'&quot;') : '';
+
+  return `<div class="task-row" id="row-${key}">
+    <div class="task-header">
+      <span class="task-num">${task.id}</span>
+      <span class="task-label">${task.label}</span>
+    </div>
+    <div class="single-input-row">
+      <input type="text" class="answer-input ${inputClass}" id="inp-${key}"
+        value="${val}" placeholder="Dein Ergebnis"
+        onkeydown="if(event.key==='Enter') submitSingle('${secId}','${task.id}')">
+      <button class="check-btn" onclick="submitSingle('${secId}','${task.id}')">Prüfen</button>
+      <span class="result-icon" id="icon-${key}">${icon}</span>
+    </div>
+    <div class="hint-box ${hintShow}" id="hint-${key}">${task.hint}</div>
+  </div>`;
+}
+
+function buildMultiTaskHTML(secId, task) {
+  const taskKey = secId + '__' + task.id;
+  const partsHTML = task.parts.map((part, i) => {
+    const key = taskKey + '__p' + i;
+    const saved = state[key];
+    const inputClass = saved ? (saved.correct ? 'correct' : 'wrong') : '';
+    const icon = saved ? (saved.correct ? '✅' : '❌') : '';
+    const val = saved ? saved.value.replace(/"/g,'&quot;') : '';
+    return `<div class="part-row">
+      <span class="part-label">${part.label}</span>
+      <div class="input-wrap">
+        <input type="text" class="answer-input ${inputClass}" id="inp-${key}"
+          value="${val}" placeholder="Ergebnis"
+          onkeydown="if(event.key==='Enter') submitPart('${secId}','${task.id}',${i})">
+        <span class="result-icon" id="icon-${key}">${icon}</span>
+      </div>
+    </div>`;
+  }).join('');
+
+  // Show hint if any part is wrong
+  const anyWrong = task.parts.some((_, i) => {
+    const s = state[taskKey + '__p' + i];
+    return s && !s.correct;
+  });
+  const hintShow = anyWrong ? 'show' : '';
+
+  return `<div class="task-row" id="row-${taskKey}">
+    <div class="task-header">
+      <span class="task-num">${task.id}</span>
+      <span class="task-label">${task.label}</span>
+    </div>
+    <div class="parts-wrap">
+      ${partsHTML}
+      <div style="margin-top:6px">
+        <button class="check-btn multi-btn" onclick="submitAllParts('${secId}','${task.id}')">Alle prüfen</button>
+      </div>
+    </div>
+    <div class="hint-box ${hintShow}" id="hint-${taskKey}">${task.hint}</div>
+  </div>`;
+}
+
+// ─── SUBMIT LOGIC ──────────────────────────────────────────────────────────────
+function submitSingle(secId, taskId) {
+  const key = secId + '__' + taskId;
+  const inp = document.getElementById('inp-' + key);
+  if (!inp.value.trim()) return;
+  const section = DATA.find(s => s.id === secId);
+  const task = section.tasks.find(t => t.id === taskId);
+  const correct = checkAnswer(inp.value, task.answers);
+  state[key] = { value: inp.value, correct };
+  inp.className = 'answer-input ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('icon-' + key).textContent = correct ? '✅' : '❌';
+  document.getElementById('hint-' + key).className = 'hint-box ' + (correct ? '' : 'show');
+  updateStats(); saveState();
+}
+
+function submitPart(secId, taskId, partIdx) {
+  const taskKey = secId + '__' + taskId;
+  const key = taskKey + '__p' + partIdx;
+  const inp = document.getElementById('inp-' + key);
+  if (!inp.value.trim()) return;
+  const section = DATA.find(s => s.id === secId);
+  const task = section.tasks.find(t => t.id === taskId);
+  const correct = checkAnswer(inp.value, task.parts[partIdx].answers);
+  state[key] = { value: inp.value, correct };
+  inp.className = 'answer-input ' + (correct ? 'correct' : 'wrong');
+  document.getElementById('icon-' + key).textContent = correct ? '✅' : '❌';
+  // Show hint if this or any other part is wrong
+  const anyWrong = task.parts.some((_, i) => {
+    const s = state[taskKey + '__p' + i];
+    return s && !s.correct;
+  });
+  document.getElementById('hint-' + taskKey).className = 'hint-box ' + (anyWrong ? 'show' : '');
+  updateStats(); saveState();
+}
+
+function submitAllParts(secId, taskId) {
+  const section = DATA.find(s => s.id === secId);
+  const task = section.tasks.find(t => t.id === taskId);
+  task.parts.forEach((_, i) => submitPart(secId, taskId, i));
+}
+
+// ─── STATS ────────────────────────────────────────────────────────────────────
+function updateStats() {
+  const total = countSlots();
+  let done = 0, correct = 0, wrong = 0;
+  Object.values(state).forEach(v => { done++; v.correct ? correct++ : wrong++; });
+  document.getElementById('countDone').textContent = done;
+  document.getElementById('countCorrect').textContent = correct;
+  document.getElementById('countWrong').textContent = wrong;
+  document.getElementById('progressBar').style.width = (done / total * 100) + '%';
+  if (done >= total) showFinalScore(correct, total);
+  else document.getElementById('finalScore').style.display = 'none';
+}
+
+function showFinalScore(correct, total) {
+  const pts = Math.round(correct / total * 75 * 2) / 2;
+  let note = 6, label = '';
+  if (pts >= 64.5) { note = 1; label = 'Sehr gut'; }
+  else if (pts >= 53) { note = 2; label = 'Gut'; }
+  else if (pts >= 42) { note = 3; label = 'Befriedigend'; }
+  else if (pts >= 30.5) { note = 4; label = 'Ausreichend'; }
+  else if (pts >= 15) { note = 5; label = 'Mangelhaft'; }
+  else { note = 6; label = 'Ungenügend'; }
+  document.getElementById('finalGrade').textContent = note;
+  document.getElementById('finalGradeLabel').textContent = label;
+  document.getElementById('finalPtsInfo').textContent = `ca. ${pts} von 75 Punkten (${correct} von ${total} Teilantworten richtig)`;
+  document.getElementById('finalScore').style.display = 'block';
+}
+
+// ─── PERSISTENCE ──────────────────────────────────────────────────────────────
+function resetAll() {
+  if (!confirm('Alle Eingaben wirklich zurücksetzen?')) return;
+  state = {};
+  localStorage.removeItem('ap2025_state');
+  buildUI();
+  updateStats();
+  document.querySelector('.section-card')?.classList.add('open');
+}
+function saveState() {
+  try { localStorage.setItem('ap2025_state', JSON.stringify(state)); } catch(e) {}
+}
+function loadState() {
+  try { const s = localStorage.getItem('ap2025_state'); if (s) state = JSON.parse(s); } catch(e) { state = {}; }
+}
+function toggleSection(id) {
+  document.getElementById('sec-' + id).classList.toggle('open');
+}
+
+// ─── INIT ──────────────────────────────────────────────────────────────────────
+loadState();
+buildUI();
+updateStats();
+document.querySelector('.section-card')?.classList.add('open');
+</script>
+</body>
+</html>
