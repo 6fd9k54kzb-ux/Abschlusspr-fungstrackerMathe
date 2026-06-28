@@ -1,0 +1,1441 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Selbsteinschätzung – Mündliche Nachprüfung Mathematik</title>
+<style>
+  :root {
+    --bg: #f6f7fb;
+    --card-bg: #ffffff;
+    --ink: #232634;
+    --ink-soft: #5b5f70;
+    --line: #e1e4ec;
+    --brand: #2f6f8f;
+    --brand-dark: #224f64;
+    --good: #2e7d4f;
+    --warn: #b8860b;
+    --bad: #c0392b;
+    --radius: 14px;
+    font-size: 16px;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.45;
+  }
+  .page {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 24px 20px 80px;
+  }
+  header.hero {
+    background: linear-gradient(135deg, var(--brand-dark), var(--brand));
+    color: #fff;
+    border-radius: var(--radius);
+    padding: 28px 28px 24px;
+    margin-bottom: 18px;
+  }
+  header.hero h1 {
+    margin: 0 0 6px;
+    font-size: 1.6rem;
+  }
+  header.hero p.subtitle {
+    margin: 0;
+    font-size: 0.98rem;
+    color: #eaf2f6;
+    max-width: 640px;
+  }
+  .intro-text {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 14px;
+  }
+  .intro-text p { margin: 0 0 10px; }
+  .intro-text p:last-child { margin-bottom: 0; }
+  .pflicht-hinweis {
+    background: #fdecea;
+    border: 1.5px solid #e8a39b;
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 18px;
+    font-size: 0.95rem;
+  }
+  .pflicht-hinweis strong { color: var(--bad); }
+  .legend-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 22px;
+  }
+  .legend-chip {
+    display: inline-block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: var(--c);
+    background: var(--cb);
+    border: 1px solid var(--c);
+  }
+  .progress-bar-wrap {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    margin-bottom: 22px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: sticky;
+    top: 8px;
+    z-index: 5;
+  }
+  .progress-track {
+    flex: 1;
+    height: 10px;
+    background: #eceef4;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg,#2f6f8f,#2e7d4f);
+    transition: width .25s ease;
+  }
+  #progress-label { font-size: 0.85rem; color: var(--ink-soft); white-space: nowrap; }
+
+  .topic-card {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 20px 22px 18px;
+    margin-bottom: 18px;
+    page-break-inside: avoid;
+  }
+  .topic-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    border-bottom: 2px solid var(--accent-bg);
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+  }
+  .topic-title { display: flex; align-items: center; gap: 10px; }
+  .topic-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--accent);
+    color: #fff;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+  }
+  .topic-title h2 { margin: 0; font-size: 1.18rem; }
+  .badge {
+    font-size: 0.76rem;
+    font-weight: 700;
+    color: var(--accent);
+    background: var(--accent-bg);
+    padding: 4px 10px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+  .topic-intro {
+    color: var(--ink-soft);
+    font-size: 0.92rem;
+    margin: 0 0 14px;
+  }
+  .level-group {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 14px 12px;
+    margin-bottom: 10px;
+    page-break-inside: avoid;
+  }
+  .level-group legend {
+    font-size: 0.86rem;
+    font-weight: 700;
+    padding: 0 4px;
+  }
+  .level-group.level-grund { border-left: 4px solid #6aa84f; }
+  .level-group.level-pruef { border-left: 4px solid #3d85c6; }
+  .level-group.level-erkl { border-left: 4px solid #b07cc6; }
+  .stars { letter-spacing: 1px; }
+  .level-sub { font-weight: 400; color: var(--ink-soft); font-size: 0.78rem; }
+  .cb-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 5px 2px;
+    font-size: 0.92rem;
+    cursor: pointer;
+  }
+  .cb-row input { margin-top: 4px; flex-shrink: 0; width: 16px; height: 16px; }
+  .cb-row:hover { background: #fafbff; border-radius: 6px; }
+
+  .scale-block { margin-top: 14px; }
+  .scale-question { font-size: 0.92rem; margin: 0 0 8px; }
+  .scale-options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+  .scale-opt {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 1.5px solid var(--line);
+    border-radius: 10px;
+    padding: 8px 10px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: border-color .15s, background .15s;
+  }
+  .scale-opt:has(input:checked) {
+    border-color: var(--brand);
+    background: #eef6f9;
+    font-weight: 600;
+  }
+  .scale-emoji { font-size: 1.05rem; }
+  .notes-block { margin-top: 14px; }
+  .notes-block label { display: block; font-size: 0.85rem; color: var(--ink-soft); margin-bottom: 4px; }
+  textarea {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    resize: vertical;
+  }
+  .topic-progress {
+    margin-top: 10px;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+  }
+
+  .big-field {
+    background: var(--card-bg);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    padding: 18px 20px;
+    margin-bottom: 18px;
+  }
+  .big-field h3 { margin: 0 0 6px; font-size: 1.05rem; }
+  .big-field p.hint { margin: 0 0 10px; font-size: 0.85rem; color: var(--ink-soft); }
+  .big-field textarea { min-height: 70px; }
+  .suggest-btn {
+    margin-top: 8px;
+    font-size: 0.82rem;
+    background: #eef6f9;
+    border: 1px solid var(--brand);
+    color: var(--brand-dark);
+    border-radius: 8px;
+    padding: 6px 12px;
+    cursor: pointer;
+  }
+  .suggest-btn:hover { background: #dcedf3; }
+
+  .eval-section {
+    background: var(--card-bg);
+    border: 2px solid var(--brand);
+    border-radius: var(--radius);
+    padding: 20px 22px;
+    margin-bottom: 18px;
+  }
+  .eval-section h2 { margin-top: 0; }
+  table.eval-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.86rem;
+    margin-top: 10px;
+  }
+  table.eval-table th, table.eval-table td {
+    border: 1px solid var(--line);
+    padding: 7px 8px;
+    text-align: left;
+    vertical-align: top;
+  }
+  table.eval-table th { background: #f4f6fb; }
+  .rec-good { color: var(--good); font-weight: 700; }
+  .rec-ok { color: var(--warn); font-weight: 700; }
+  .rec-bad { color: var(--bad); font-weight: 700; }
+  .rec-open { color: var(--ink-soft); font-style: italic; }
+  .kind-tag {
+    font-size: 0.72rem;
+    font-weight: 700;
+    padding: 2px 7px;
+    border-radius: 999px;
+    white-space: nowrap;
+  }
+
+  .toolbar {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 18px;
+  }
+  .toolbar button {
+    font-family: inherit;
+    font-size: 0.88rem;
+    padding: 9px 16px;
+    border-radius: 9px;
+    border: 1px solid var(--line);
+    background: #fff;
+    cursor: pointer;
+  }
+  .toolbar button.primary { background: var(--brand); color: #fff; border-color: var(--brand); }
+  .toolbar button.danger { color: var(--bad); border-color: #e8a39b; }
+
+  footer {
+    text-align: center;
+    font-size: 0.78rem;
+    color: var(--ink-soft);
+    margin-top: 20px;
+  }
+
+  @media (max-width: 560px) {
+    .scale-options { grid-template-columns: 1fr; }
+  }
+
+  @media print {
+    body { background: #fff; }
+    .no-print { display: none !important; }
+    .progress-bar-wrap { position: static; }
+    .page { max-width: 100%; padding: 0; }
+    header.hero { background: #224f64 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .topic-card, .level-group, .big-field, .eval-section { box-shadow: none; }
+    .scale-opt:has(input:checked) { background: #eef6f9 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    @page { size: A4; margin: 14mm 12mm; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="hero">
+    <h1>Selbsteinschätzung – Vorbereitung auf die mündliche Mathematik-Nachprüfung</h1>
+    <p class="subtitle">Damit du gemeinsam mit deiner Lehrkraft gut planen kannst, welche Themen sich für deine
+    mündliche Prüfung eignen.</p>
+  </header>
+
+  <div class="intro-text">
+    <p><strong>Worum geht es hier?</strong> In der mündlichen Nachprüfung sprichst du ca. 20 Minuten mit deiner
+    Prüferin oder deinem Prüfer über Mathematik-Aufgaben. Du darfst dabei Stift, Papier, Taschenrechner und
+    Formelsammlung benutzen. Wichtig ist nicht nur das richtige Ergebnis – genauso wichtig ist, dass du deinen
+    Rechenweg erklären, Fachbegriffe richtig benutzen und auf Nachfragen reagieren kannst.</p>
+    <p>Mit diesem Bogen schätzt du für jedes Thema ein: Was kannst du schon sicher erklären? Wo brauchst du noch
+    Hilfe? Welche Themen möchtest du in deiner Prüfung zeigen? Am Ende bekommst du eine automatische Übersicht,
+    die dir und deiner Lehrkraft als Grundlage für die Prüfungsvorbereitung dient.</p>
+  </div>
+
+  <div class="pflicht-hinweis">
+    ⚠️ <strong>Verpflichtend für alle:</strong> Die Themen <strong>Funktionen</strong> und
+    <strong>Finanzmathematik</strong> werden in <u>jeder</u> mündlichen Nachprüfung geprüft – unabhängig davon, wie
+    sicher du dich fühlst. Bereite diese beiden Bereiche also auf jeden Fall vor. Bei den restlichen Themen darfst
+    du gemeinsam mit deiner Lehrkraft individuell festlegen, welche zusätzlich in deiner Prüfung behandelt werden.
+  </div>
+
+  <div class="legend-row"><span class="legend-chip" style="--c:#c0392b;--cb:#fdecea">Pflichtthema – kommt sicher vor</span><span class="legend-chip" style="--c:#1f6f8b;--cb:#e8f3f6">Wahlbereich – individuell anpassbar</span><span class="legend-chip" style="--c:#6b5b95;--cb:#efeaf6">Querschnittsthema – steckt überall drin</span></div>
+
+  <div class="toolbar no-print">
+    <button class="primary" onclick="window.print()">🖨️ Seite drucken / als PDF speichern</button>
+    <button class="danger" onclick="resetAll()">🗑️ Alles zurücksetzen</button>
+  </div>
+
+  <div class="progress-bar-wrap no-print">
+    <div class="progress-track"><div class="progress-fill" id="progress-fill"></div></div>
+    <span id="progress-label">0 / 9 Themen eingeschätzt</span>
+  </div>
+
+  
+    <section class="topic-card" id="card-funktionen" data-kind="pflicht">
+      <div class="topic-head" style="--accent:#c0392b; --accent-bg:#fdecea;">
+        <div class="topic-title">
+          <span class="topic-num">1</span>
+          <h2>Funktionen</h2>
+        </div>
+        <span class="badge">Pflichtthema – kommt sicher vor</span>
+      </div>
+      <p class="topic-intro">Lineare und quadratische Funktionen kommen in jeder mündlichen Nachprüfung vor – egal wie sicher du dich fühlst.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlage <span class="level-sub"></span></legend>
+            <label class="cb-row" for="funktionen_grund_1">
+              <input type="checkbox" id="funktionen_grund_1" class="comp-cb" data-topic="funktionen" data-level="grund">
+              <span>Ich kann aus einer linearen Funktionsgleichung die Steigung m und den y-Achsenabschnitt t ablesen und erklären, was beide Werte bedeuten.</span>
+            </label>
+            <label class="cb-row" for="funktionen_grund_2">
+              <input type="checkbox" id="funktionen_grund_2" class="comp-cb" data-topic="funktionen" data-level="grund">
+              <span>Ich kann den Funktionswert einer linearen oder quadratischen Funktion für ein gegebenes x berechnen.</span>
+            </label>
+            <label class="cb-row" for="funktionen_grund_3">
+              <input type="checkbox" id="funktionen_grund_3" class="comp-cb" data-topic="funktionen" data-level="grund">
+              <span>Ich kann an einem Graphen erkennen, ob es sich um eine lineare oder eine quadratische Funktion handelt, und das begründen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub"></span></legend>
+            
+            <label class="cb-row" for="funktionen_pruef_0">
+              <input type="checkbox" id="funktionen_pruef_0" class="comp-cb" data-topic="funktionen" data-level="pruef">
+              <span>Ich kann aus zwei Punkten die Funktionsgleichung einer linearen oder quadratischen Funktion bestimmen und meinen Rechenweg erklären.</span>
+            </label>
+            <label class="cb-row" for="funktionen_pruef_2">
+              <input type="checkbox" id="funktionen_pruef_2" class="comp-cb" data-topic="funktionen" data-level="pruef">
+              <span>Ich kann die Nullstellen einer linearen oder quadratischen Funktion berechnen und sagen, was sie im Sachzusammenhang bedeuten.</span>
+            </label>
+            <label class="cb-row" for="funktionen_pruef_3">
+              <input type="checkbox" id="funktionen_pruef_3" class="comp-cb" data-topic="funktionen" data-level="pruef">
+              <span>Ich kann den Schnittpunkt zweier Geraden oder einer Geraden mit einer Parabel rechnerisch bestimmen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            <label class="cb-row" for="funktionen_pruef_1">
+              <input type="checkbox" id="funktionen_pruef_1" class="comp-cb" data-topic="funktionen" data-level="pruef">
+              <span>Ich kann den Scheitelpunkt einer quadratischen Funktion aus der Scheitelpunktform ablesen und diese in die allgemeine Form umwandeln (und umgekehrt).</span>
+            </label>
+            <label class="cb-row" for="funktionen_erkl_0">
+              <input type="checkbox" id="funktionen_erkl_0" class="comp-cb" data-topic="funktionen" data-level="erkl">
+              <span>Ich kann aus einer Sachsituation (z. B. Flugbahn, Brückenbogen, Tarif) selbst eine passende Funktionsgleichung aufstellen und meine Modellierung begründen.</span>
+            </label>
+            <label class="cb-row" for="funktionen_erkl_1">
+              <input type="checkbox" id="funktionen_erkl_1" class="comp-cb" data-topic="funktionen" data-level="erkl">
+              <span>Ich kann erklären, warum ich die Scheitelpunktform statt der allgemeinen Form gewählt habe (oder umgekehrt).</span>
+            </label>
+            <label class="cb-row" for="funktionen_erkl_2">
+              <input type="checkbox" id="funktionen_erkl_2" class="comp-cb" data-topic="funktionen" data-level="erkl">
+              <span>Ich kann auf Nachfrage erklären, wie sich eine Änderung von a, x_s oder y_s auf den Graphen auswirkt.</span>
+            </label>
+            <label class="cb-row" for="funktionen_erkl_3">
+              <input type="checkbox" id="funktionen_erkl_3" class="comp-cb" data-topic="funktionen" data-level="erkl">
+              <span>Ich kann mein Ergebnis auf Plausibilität prüfen und im Sachkontext einordnen (&quot;ergibt das überhaupt Sinn?&quot;).</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Funktionen</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_funktionen_1">
+            <input type="radio" name="scale_funktionen" id="scale_funktionen_1" value="1" class="scale-input" data-topic="funktionen">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_funktionen_2">
+            <input type="radio" name="scale_funktionen" id="scale_funktionen_2" value="2" class="scale-input" data-topic="funktionen">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_funktionen_3">
+            <input type="radio" name="scale_funktionen" id="scale_funktionen_3" value="3" class="scale-input" data-topic="funktionen">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_funktionen_4">
+            <input type="radio" name="scale_funktionen" id="scale_funktionen_4" value="4" class="scale-input" data-topic="funktionen">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_funktionen">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_funktionen" data-field="notes_funktionen" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-funktionen"></div>
+    </section>
+
+    <section class="topic-card" id="card-finanzmathematik" data-kind="pflicht">
+      <div class="topic-head" style="--accent:#c0392b; --accent-bg:#fdecea;">
+        <div class="topic-title">
+          <span class="topic-num">2</span>
+          <h2>Finanzmathematik</h2>
+        </div>
+        <span class="badge">Pflichtthema – kommt sicher vor</span>
+      </div>
+      <p class="topic-intro">Zins-, Zinseszins-, Spar- und Tilgungsrechnung – dieser Bereich wird in jeder mündlichen Nachprüfung geprüft.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">– -</span></legend>
+            
+            <label class="cb-row" for="finanzmathematik_grund_0">
+              <input type="checkbox" id="finanzmathematik_grund_0" class="comp-cb" data-topic="finanzmathematik" data-level="grund">
+              <span>Ich kann Grundwert, Prozentsatz oder Zinsen berechnen, wenn die anderen Größen bekannt sind.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_grund_1">
+              <input type="checkbox" id="finanzmathematik_grund_1" class="comp-cb" data-topic="finanzmathematik" data-level="grund">
+              <span>Ich kann erklären, was Zinssatz, Kapital und Zinsen bedeuten.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_grund_2">
+              <input type="checkbox" id="finanzmathematik_grund_2" class="comp-cb" data-topic="finanzmathematik" data-level="grund">
+              <span>Ich kann mit der Zinseszinsformel ein Endkapital nach mehreren Jahren berechnen.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_grund_3">
+              <input type="checkbox" id="finanzmathematik_grund_3" class="comp-cb" data-topic="finanzmathematik" data-level="grund">
+              <span>Ich kann einem Tilgungsplan einzelne Werte (Restschuld, Zinsen, Tilgung) entnehmen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="finanzmathematik_pruef_0">
+              <input type="checkbox" id="finanzmathematik_pruef_0" class="comp-cb" data-topic="finanzmathematik" data-level="pruef">
+              <span>Ich kann berechnen, nach wie vielen Jahren ein Kapital bei Zinseszins einen bestimmten Betrag erreicht.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_pruef_1">
+              <input type="checkbox" id="finanzmathematik_pruef_1" class="comp-cb" data-topic="finanzmathematik" data-level="pruef">
+              <span>Ich kann einen Tilgungsplan (Annuitäten- oder Ratentilgung) selbstständig vervollständigen und den Unterschied beider Verfahren erklären.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_pruef_2">
+              <input type="checkbox" id="finanzmathematik_pruef_2" class="comp-cb" data-topic="finanzmathematik" data-level="pruef">
+              <span>Ich kann Annuität, Restschuld oder Laufzeit eines Darlehens berechnen.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_pruef_3">
+              <input type="checkbox" id="finanzmathematik_pruef_3" class="comp-cb" data-topic="finanzmathematik" data-level="pruef">
+              <span>Ich kann eine Sparplan-Aufgabe mit regelmäßiger Ein- und Auszahlung und Verzinsung lösen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="finanzmathematik_erkl_0">
+              <input type="checkbox" id="finanzmathematik_erkl_0" class="comp-cb" data-topic="finanzmathematik" data-level="erkl">
+              <span>Ich kann erklären, wie sich eine Sondertilgung auf Restschuld und weitere Tilgung auswirkt.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_erkl_1">
+              <input type="checkbox" id="finanzmathematik_erkl_1" class="comp-cb" data-topic="finanzmathematik" data-level="erkl">
+              <span>Ich kann begründen, welches Tilgungsverfahren in einer gegebenen Situation günstiger ist.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_erkl_2">
+              <input type="checkbox" id="finanzmathematik_erkl_2" class="comp-cb" data-topic="finanzmathematik" data-level="erkl">
+              <span>Ich kann eine mehrteilige Finanzmathematik-Aufgabe (z. B. Sparen und Finanzieren kombiniert) strukturiert durchgehen und meinen Lösungsweg mündlich erklären.</span>
+            </label>
+            <label class="cb-row" for="finanzmathematik_erkl_3">
+              <input type="checkbox" id="finanzmathematik_erkl_3" class="comp-cb" data-topic="finanzmathematik" data-level="erkl">
+              <span>Ich kann erklären, warum sich Zinseszins von einfachen Zinsen unterscheidet und welche Auswirkung das langfristig hat.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Finanzmathematik</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_finanzmathematik_1">
+            <input type="radio" name="scale_finanzmathematik" id="scale_finanzmathematik_1" value="1" class="scale-input" data-topic="finanzmathematik">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_finanzmathematik_2">
+            <input type="radio" name="scale_finanzmathematik" id="scale_finanzmathematik_2" value="2" class="scale-input" data-topic="finanzmathematik">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_finanzmathematik_3">
+            <input type="radio" name="scale_finanzmathematik" id="scale_finanzmathematik_3" value="3" class="scale-input" data-topic="finanzmathematik">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_finanzmathematik_4">
+            <input type="radio" name="scale_finanzmathematik" id="scale_finanzmathematik_4" value="4" class="scale-input" data-topic="finanzmathematik">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_finanzmathematik">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_finanzmathematik" data-field="notes_finanzmathematik" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-finanzmathematik"></div>
+    </section>
+
+    <section class="topic-card" id="card-geometrie" data-kind="wahl">
+      <div class="topic-head" style="--accent:#1f6f8b; --accent-bg:#e8f3f6;">
+        <div class="topic-title">
+          <span class="topic-num">3</span>
+          <h2>Geometrie – Raum und Form</h2>
+        </div>
+        <span class="badge">Wahlbereich – individuell anpassbar</span>
+      </div>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="geometrie_grund_0">
+              <input type="checkbox" id="geometrie_grund_0" class="comp-cb" data-topic="geometrie" data-level="grund">
+              <span>Ich kann Formeln für Umfang und Flächeninhalt von Rechteck, Dreieck und Kreis aus der Merkhilfe entnehmen und anwenden.</span>
+            </label>
+            <label class="cb-row" for="geometrie_grund_1">
+              <input type="checkbox" id="geometrie_grund_1" class="comp-cb" data-topic="geometrie" data-level="grund">
+              <span>Ich kann Volumen und Oberfläche von Würfel, Quader und Zylinder berechnen.</span>
+            </label>
+            <label class="cb-row" for="geometrie_grund_2">
+              <input type="checkbox" id="geometrie_grund_2" class="comp-cb" data-topic="geometrie" data-level="grund">
+              <span>Ich kann Längen-, Flächen- und Volumeneinheiten (cm, m, m², m³, l) korrekt umrechnen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="geometrie_pruef_0">
+              <input type="checkbox" id="geometrie_pruef_0" class="comp-cb" data-topic="geometrie" data-level="pruef">
+              <span>Ich kann Volumen und Oberfläche von Pyramide, Kegel und Kugel berechnen.</span>
+            </label>
+            <label class="cb-row" for="geometrie_pruef_1">
+              <input type="checkbox" id="geometrie_pruef_1" class="comp-cb" data-topic="geometrie" data-level="pruef">
+              <span>Ich kann mit dem Strahlensatz fehlende Längen in ähnlichen Figuren berechnen.</span>
+            </label>
+            <label class="cb-row" for="geometrie_pruef_2">
+              <input type="checkbox" id="geometrie_pruef_2" class="comp-cb" data-topic="geometrie" data-level="pruef">
+              <span>Ich kann zusammengesetzte Körper (z. B. Zylinder mit Kegeldach) in Teilkörper zerlegen und ihr Gesamtvolumen bzw. ihre Gesamtoberfläche berechnen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="geometrie_erkl_0">
+              <input type="checkbox" id="geometrie_erkl_0" class="comp-cb" data-topic="geometrie" data-level="erkl">
+              <span>Ich kann eigenständig erkennen, welche Formel ich bei einem zusammengesetzten Körper warum verwende.</span>
+            </label>
+            <label class="cb-row" for="geometrie_erkl_1">
+              <input type="checkbox" id="geometrie_erkl_1" class="comp-cb" data-topic="geometrie" data-level="erkl">
+              <span>Ich kann eine Sachaufgabe mit Strahlensätzen (z. B. Schattenlänge, Modellmaßstab) selbstständig modellieren und lösen.</span>
+            </label>
+            <label class="cb-row" for="geometrie_erkl_2">
+              <input type="checkbox" id="geometrie_erkl_2" class="comp-cb" data-topic="geometrie" data-level="erkl">
+              <span>Ich kann mein Ergebnis im Sachkontext einordnen und Rückfragen zu meinem Rechenweg beantworten.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Geometrie – Raum und Form</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_geometrie_1">
+            <input type="radio" name="scale_geometrie" id="scale_geometrie_1" value="1" class="scale-input" data-topic="geometrie">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_geometrie_2">
+            <input type="radio" name="scale_geometrie" id="scale_geometrie_2" value="2" class="scale-input" data-topic="geometrie">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_geometrie_3">
+            <input type="radio" name="scale_geometrie" id="scale_geometrie_3" value="3" class="scale-input" data-topic="geometrie">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_geometrie_4">
+            <input type="radio" name="scale_geometrie" id="scale_geometrie_4" value="4" class="scale-input" data-topic="geometrie">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_geometrie">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_geometrie" data-field="notes_geometrie" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-geometrie"></div>
+    </section>
+
+    <section class="topic-card" id="card-trigonometrie" data-kind="wahl">
+      <div class="topic-head" style="--accent:#1f6f8b; --accent-bg:#e8f3f6;">
+        <div class="topic-title">
+          <span class="topic-num">4</span>
+          <h2>Trigonometrie</h2>
+        </div>
+        <span class="badge">Wahlbereich – individuell anpassbar</span>
+      </div>
+      <p class="topic-intro">Satz des Pythagoras, Sinus-/Kosinussatz und Steigungsberechnungen .</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="trigonometrie_grund_0">
+              <input type="checkbox" id="trigonometrie_grund_0" class="comp-cb" data-topic="trigonometrie" data-level="grund">
+              <span>Ich kann den Satz des Pythagoras anwenden, um eine fehlende Seite im rechtwinkligen Dreieck zu berechnen.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_grund_1">
+              <input type="checkbox" id="trigonometrie_grund_1" class="comp-cb" data-topic="trigonometrie" data-level="grund">
+              <span>Ich kann Sinus, Kosinus und Tangens im rechtwinkligen Dreieck nutzen, um Seiten oder Winkel zu berechnen.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_grund_2">
+              <input type="checkbox" id="trigonometrie_grund_2" class="comp-cb" data-topic="trigonometrie" data-level="grund">
+              <span>Ich kann eine Steigung oder ein Gefälle in Prozent berechnen und erklären, was der Wert bedeutet.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="trigonometrie_pruef_0">
+              <input type="checkbox" id="trigonometrie_pruef_0" class="comp-cb" data-topic="trigonometrie" data-level="pruef">
+              <span>Ich kann den Sinussatz und den Kosinussatz in allgemeinen (nicht rechtwinkligen) Dreiecken anwenden.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_pruef_1">
+              <input type="checkbox" id="trigonometrie_pruef_1" class="comp-cb" data-topic="trigonometrie" data-level="pruef">
+              <span>Ich kann den Flächeninhalt eines beliebigen Dreiecks mit trigonometrischen Formeln berechnen.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_pruef_2">
+              <input type="checkbox" id="trigonometrie_pruef_2" class="comp-cb" data-topic="trigonometrie" data-level="pruef">
+              <span>Ich kann aus einer Sachsituation das passende Dreieck und das passende Verfahren auswählen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="trigonometrie_erkl_0">
+              <input type="checkbox" id="trigonometrie_erkl_0" class="comp-cb" data-topic="trigonometrie" data-level="erkl">
+              <span>Ich kann begründen, warum ich Sinussatz, Kosinussatz oder Pythagoras gewählt habe und kein anderes Verfahren.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_erkl_1">
+              <input type="checkbox" id="trigonometrie_erkl_1" class="comp-cb" data-topic="trigonometrie" data-level="erkl">
+              <span>Ich kann eine mehrschrittige Aufgabe mit mehreren verbundenen Dreiecken strukturiert lösen und meinen Weg laut erklären.</span>
+            </label>
+            <label class="cb-row" for="trigonometrie_erkl_2">
+              <input type="checkbox" id="trigonometrie_erkl_2" class="comp-cb" data-topic="trigonometrie" data-level="erkl">
+              <span>Ich kann eine Plausibilitätsprüfung meines Ergebnisses durchführen (z. B. eine Vorgabe wie &quot;Gefälle höchstens 16 %&quot; prüfen).</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Trigonometrie</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_trigonometrie_1">
+            <input type="radio" name="scale_trigonometrie" id="scale_trigonometrie_1" value="1" class="scale-input" data-topic="trigonometrie">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_trigonometrie_2">
+            <input type="radio" name="scale_trigonometrie" id="scale_trigonometrie_2" value="2" class="scale-input" data-topic="trigonometrie">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_trigonometrie_3">
+            <input type="radio" name="scale_trigonometrie" id="scale_trigonometrie_3" value="3" class="scale-input" data-topic="trigonometrie">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_trigonometrie_4">
+            <input type="radio" name="scale_trigonometrie" id="scale_trigonometrie_4" value="4" class="scale-input" data-topic="trigonometrie">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_trigonometrie">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_trigonometrie" data-field="notes_trigonometrie" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-trigonometrie"></div>
+    </section>
+
+    <section class="topic-card" id="card-statistik" data-kind="wahl">
+      <div class="topic-head" style="--accent:#1f6f8b; --accent-bg:#e8f3f6;">
+        <div class="topic-title">
+          <span class="topic-num">5</span>
+          <h2>Statistik – Daten auswerten</h2>
+        </div>
+        <span class="badge">Wahlbereich – individuell anpassbar</span>
+      </div>
+      <p class="topic-intro">Kennwerte und Diagramme auswerten – Teil des Wahlbereichs &quot;Daten und Zufall&quot;.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="statistik_grund_0">
+              <input type="checkbox" id="statistik_grund_0" class="comp-cb" data-topic="statistik" data-level="grund">
+              <span>Ich kann Werte aus Tabellen, Balken- oder Liniendiagrammen ablesen.</span>
+            </label>
+            <label class="cb-row" for="statistik_grund_1">
+              <input type="checkbox" id="statistik_grund_1" class="comp-cb" data-topic="statistik" data-level="grund">
+              <span>Ich kann Median, arithmetisches Mittel und Spannweite einer Datenreihe berechnen.</span>
+            </label>
+            <label class="cb-row" for="statistik_grund_2">
+              <input type="checkbox" id="statistik_grund_2" class="comp-cb" data-topic="statistik" data-level="grund">
+              <span>Ich kann erklären, was Median, Mittelwert und Spannweite bedeuten.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="statistik_pruef_0">
+              <input type="checkbox" id="statistik_pruef_0" class="comp-cb" data-topic="statistik" data-level="pruef">
+              <span>Ich kann relative und absolute Häufigkeiten berechnen und den Unterschied erklären.</span>
+            </label>
+            <label class="cb-row" for="statistik_pruef_1">
+              <input type="checkbox" id="statistik_pruef_1" class="comp-cb" data-topic="statistik" data-level="pruef">
+              <span>Ich kann beurteilen, ob arithmetisches Mittel oder Median für eine Datenreihe die geeignetere Kennzahl ist (z. B. bei Ausreißern).</span>
+            </label>
+            <label class="cb-row" for="statistik_pruef_2">
+              <input type="checkbox" id="statistik_pruef_2" class="comp-cb" data-topic="statistik" data-level="pruef">
+              <span>Ich kann Daten aus zwei verschiedenen Diagrammen vergleichen und eine begründete Aussage treffen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="statistik_erkl_0">
+              <input type="checkbox" id="statistik_erkl_0" class="comp-cb" data-topic="statistik" data-level="erkl">
+              <span>Ich kann begründen, warum eine bestimmte Kennzahl in einem konkreten Sachzusammenhang irreführend sein kann.</span>
+            </label>
+            <label class="cb-row" for="statistik_erkl_1">
+              <input type="checkbox" id="statistik_erkl_1" class="comp-cb" data-topic="statistik" data-level="erkl">
+              <span>Ich kann meine Einschätzung zu einer Datenauswertung mündlich vertreten und auf Rückfragen reagieren.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Statistik – Daten auswerten</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_statistik_1">
+            <input type="radio" name="scale_statistik" id="scale_statistik_1" value="1" class="scale-input" data-topic="statistik">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_statistik_2">
+            <input type="radio" name="scale_statistik" id="scale_statistik_2" value="2" class="scale-input" data-topic="statistik">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_statistik_3">
+            <input type="radio" name="scale_statistik" id="scale_statistik_3" value="3" class="scale-input" data-topic="statistik">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_statistik_4">
+            <input type="radio" name="scale_statistik" id="scale_statistik_4" value="4" class="scale-input" data-topic="statistik">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_statistik">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_statistik" data-field="notes_statistik" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-statistik"></div>
+    </section>
+
+    <section class="topic-card" id="card-wahrscheinlichkeit" data-kind="wahl">
+      <div class="topic-head" style="--accent:#1f6f8b; --accent-bg:#e8f3f6;">
+        <div class="topic-title">
+          <span class="topic-num">6</span>
+          <h2>Wahrscheinlichkeit – Zufall</h2>
+        </div>
+        <span class="badge">Wahlbereich – individuell anpassbar</span>
+      </div>
+      <p class="topic-intro">Ein- und mehrstufige Zufallsexperimente – Teil des Wahlbereichs &quot;Daten und Zufall&quot;.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="wahrscheinlichkeit_grund_0">
+              <input type="checkbox" id="wahrscheinlichkeit_grund_0" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="grund">
+              <span>Ich kann ein einstufiges Zufallsexperiment beschreiben und die Wahrscheinlichkeit eines Ereignisses berechnen.</span>
+            </label>
+            <label class="cb-row" for="wahrscheinlichkeit_grund_1">
+              <input type="checkbox" id="wahrscheinlichkeit_grund_1" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="grund">
+              <span>Ich kann ein Baumdiagramm zu einem mehrstufigen Zufallsexperiment lesen und vervollständigen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="wahrscheinlichkeit_pruef_0">
+              <input type="checkbox" id="wahrscheinlichkeit_pruef_0" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="pruef">
+              <span>Ich kann mit der Pfadregel die Wahrscheinlichkeit eines mehrstufigen Zufallsexperiments berechnen (mit und ohne Zurücklegen).</span>
+            </label>
+            <label class="cb-row" for="wahrscheinlichkeit_pruef_1">
+              <input type="checkbox" id="wahrscheinlichkeit_pruef_1" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="pruef">
+              <span>Ich kann Wahrscheinlichkeiten von Gegenereignissen und Formulierungen wie &quot;mindestens&quot; oder &quot;höchstens&quot; berechnen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="wahrscheinlichkeit_erkl_0">
+              <input type="checkbox" id="wahrscheinlichkeit_erkl_0" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="erkl">
+              <span>Ich kann begründen, warum sich Wahrscheinlichkeiten beim Ziehen mit bzw. ohne Zurücklegen unterscheiden.</span>
+            </label>
+            <label class="cb-row" for="wahrscheinlichkeit_erkl_1">
+              <input type="checkbox" id="wahrscheinlichkeit_erkl_1" class="comp-cb" data-topic="wahrscheinlichkeit" data-level="erkl">
+              <span>Ich kann zu einer Aussage wie &quot;Das ist doch unmöglich&quot; sachlich begründet Stellung nehmen.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Wahrscheinlichkeit – Zufall</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_wahrscheinlichkeit_1">
+            <input type="radio" name="scale_wahrscheinlichkeit" id="scale_wahrscheinlichkeit_1" value="1" class="scale-input" data-topic="wahrscheinlichkeit">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_wahrscheinlichkeit_2">
+            <input type="radio" name="scale_wahrscheinlichkeit" id="scale_wahrscheinlichkeit_2" value="2" class="scale-input" data-topic="wahrscheinlichkeit">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_wahrscheinlichkeit_3">
+            <input type="radio" name="scale_wahrscheinlichkeit" id="scale_wahrscheinlichkeit_3" value="3" class="scale-input" data-topic="wahrscheinlichkeit">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_wahrscheinlichkeit_4">
+            <input type="radio" name="scale_wahrscheinlichkeit" id="scale_wahrscheinlichkeit_4" value="4" class="scale-input" data-topic="wahrscheinlichkeit">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_wahrscheinlichkeit">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_wahrscheinlichkeit" data-field="notes_wahrscheinlichkeit" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-wahrscheinlichkeit"></div>
+    </section>
+
+    <section class="topic-card" id="card-prozent" data-kind="quer">
+      <div class="topic-head" style="--accent:#6b5b95; --accent-bg:#efeaf6;">
+        <div class="topic-title">
+          <span class="topic-num">7</span>
+          <h2>Prozentrechnung</h2>
+        </div>
+        <span class="badge">Querschnittsthema – steckt überall drin</span>
+      </div>
+      <p class="topic-intro">Grundwerkzeug, das vor allem im Pflichtteil und in der Finanzmathematik gebraucht wird.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="prozent_grund_0">
+              <input type="checkbox" id="prozent_grund_0" class="comp-cb" data-topic="prozent" data-level="grund">
+              <span>Ich kann Grundwert, Prozentsatz und Prozentwert berechnen, wenn zwei der drei Größen bekannt sind.</span>
+            </label>
+            <label class="cb-row" for="prozent_grund_1">
+              <input type="checkbox" id="prozent_grund_1" class="comp-cb" data-topic="prozent" data-level="grund">
+              <span>Ich kann einen Rabatt, Aufschlag oder eine Ermäßigung berechnen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="prozent_pruef_0">
+              <input type="checkbox" id="prozent_pruef_0" class="comp-cb" data-topic="prozent" data-level="pruef">
+              <span>Ich kann den ursprünglichen Preis (Grundwert) berechnen, wenn nur der Rabattbetrag bekannt ist (Rückwärtsrechnen).</span>
+            </label>
+            <label class="cb-row" for="prozent_pruef_1">
+              <input type="checkbox" id="prozent_pruef_1" class="comp-cb" data-topic="prozent" data-level="pruef">
+              <span>Ich kann mehrstufige Prozentaufgaben (z. B. Rabatt plus Zuschlag) nachvollziehbar lösen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="prozent_erkl_0">
+              <input type="checkbox" id="prozent_erkl_0" class="comp-cb" data-topic="prozent" data-level="erkl">
+              <span>Ich kann erklären, warum sich mehrere aufeinanderfolgende Prozentänderungen nicht einfach addieren lassen.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Prozentrechnung</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_prozent_1">
+            <input type="radio" name="scale_prozent" id="scale_prozent_1" value="1" class="scale-input" data-topic="prozent">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_prozent_2">
+            <input type="radio" name="scale_prozent" id="scale_prozent_2" value="2" class="scale-input" data-topic="prozent">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_prozent_3">
+            <input type="radio" name="scale_prozent" id="scale_prozent_3" value="3" class="scale-input" data-topic="prozent">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_prozent_4">
+            <input type="radio" name="scale_prozent" id="scale_prozent_4" value="4" class="scale-input" data-topic="prozent">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_prozent">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_prozent" data-field="notes_prozent" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-prozent"></div>
+    </section>
+
+    <section class="topic-card" id="card-gleichungen" data-kind="quer">
+      <div class="topic-head" style="--accent:#6b5b95; --accent-bg:#efeaf6;">
+        <div class="topic-title">
+          <span class="topic-num">8</span>
+          <h2>Gleichungen, Terme &amp; algebraische Verfahren</h2>
+        </div>
+        <span class="badge">Querschnittsthema – steckt überall drin</span>
+      </div>
+      <p class="topic-intro">Werkzeuge, die in fast jeder Aufgabe gebraucht werden – vor allem im Pflichtteil ohne Taschenrechner.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="gleichungen_grund_0">
+              <input type="checkbox" id="gleichungen_grund_0" class="comp-cb" data-topic="gleichungen" data-level="grund">
+              <span>Ich kann lineare Gleichungen mit einer Variablen lösen.</span>
+            </label>
+            <label class="cb-row" for="gleichungen_grund_1">
+              <input type="checkbox" id="gleichungen_grund_1" class="comp-cb" data-topic="gleichungen" data-level="grund">
+              <span>Ich kann zu einer Sachsituation einen passenden Term aufstellen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="gleichungen_pruef_0">
+              <input type="checkbox" id="gleichungen_pruef_0" class="comp-cb" data-topic="gleichungen" data-level="pruef">
+              <span>Ich kann quadratische Gleichungen lösen (z. B. mit der pq-Formel oder Mitternachtsformel).</span>
+            </label>
+            <label class="cb-row" for="gleichungen_pruef_1">
+              <input type="checkbox" id="gleichungen_pruef_1" class="comp-cb" data-topic="gleichungen" data-level="pruef">
+              <span>Ich kann ein lineares Gleichungssystem mit zwei Variablen lösen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="gleichungen_erkl_0">
+              <input type="checkbox" id="gleichungen_erkl_0" class="comp-cb" data-topic="gleichungen" data-level="erkl">
+              <span>Ich kann erklären, welchen Rechenschritt ich bei einer Gleichung warum durchführe (Äquivalenzumformung).</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Gleichungen, Terme &amp; algebraische Verfahren</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_gleichungen_1">
+            <input type="radio" name="scale_gleichungen" id="scale_gleichungen_1" value="1" class="scale-input" data-topic="gleichungen">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_gleichungen_2">
+            <input type="radio" name="scale_gleichungen" id="scale_gleichungen_2" value="2" class="scale-input" data-topic="gleichungen">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_gleichungen_3">
+            <input type="radio" name="scale_gleichungen" id="scale_gleichungen_3" value="3" class="scale-input" data-topic="gleichungen">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_gleichungen_4">
+            <input type="radio" name="scale_gleichungen" id="scale_gleichungen_4" value="4" class="scale-input" data-topic="gleichungen">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_gleichungen">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_gleichungen" data-field="notes_gleichungen" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-gleichungen"></div>
+    </section>
+
+    <section class="topic-card" id="card-sachaufgaben" data-kind="quer">
+      <div class="topic-head" style="--accent:#6b5b95; --accent-bg:#efeaf6;">
+        <div class="topic-title">
+          <span class="topic-num">9</span>
+          <h2>Sachaufgaben &amp; Modellieren</h2>
+        </div>
+        <span class="badge">Querschnittsthema – steckt überall drin</span>
+      </div>
+      <p class="topic-intro">Diese Kompetenz steckt in jeder Aufgabe: Text verstehen, in Mathematik übersetzen, Ergebnis einordnen – genau das, was im Prüfungsgespräch zählt.</p>
+
+      <div class="comp-groups">
+        
+          <fieldset class="level-group level-grund">
+            <legend><span class="stars">★</span> Grundlegend sicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="sachaufgaben_grund_0">
+              <input type="checkbox" id="sachaufgaben_grund_0" class="comp-cb" data-topic="sachaufgaben" data-level="grund">
+              <span>Ich kann einer Textaufgabe die relevanten Zahlen und Informationen entnehmen.</span>
+            </label>
+            <label class="cb-row" for="sachaufgaben_grund_1">
+              <input type="checkbox" id="sachaufgaben_grund_1" class="comp-cb" data-topic="sachaufgaben" data-level="grund">
+              <span>Ich kann erkennen, welche Rechenoperation oder Formel zu einer Sachsituation passt.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-pruef">
+            <legend><span class="stars">★★</span> Prüfungssicher <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="sachaufgaben_pruef_0">
+              <input type="checkbox" id="sachaufgaben_pruef_0" class="comp-cb" data-topic="sachaufgaben" data-level="pruef">
+              <span>Ich kann eine Sachaufgabe in mehreren nachvollziehbaren Teilschritten lösen.</span>
+            </label>
+            <label class="cb-row" for="sachaufgaben_pruef_1">
+              <input type="checkbox" id="sachaufgaben_pruef_1" class="comp-cb" data-topic="sachaufgaben" data-level="pruef">
+              <span>Ich kann mein Ergebnis in einem ganzen Satz im Sachzusammenhang formulieren – nicht nur eine Zahl nennen.</span>
+            </label>
+          </fieldset>
+          <fieldset class="level-group level-erkl">
+            <legend><span class="stars">★★★</span> Erklären und übertragen <span class="level-sub">–  -</span></legend>
+            
+            <label class="cb-row" for="sachaufgaben_erkl_0">
+              <input type="checkbox" id="sachaufgaben_erkl_0" class="comp-cb" data-topic="sachaufgaben" data-level="erkl">
+              <span>Ich kann mein Vorgehen bei einer Sachaufgabe frei mündlich erklären, auch wenn ich zwischendurch nachfragen lasse.</span>
+            </label>
+            <label class="cb-row" for="sachaufgaben_erkl_1">
+              <input type="checkbox" id="sachaufgaben_erkl_1" class="comp-cb" data-topic="sachaufgaben" data-level="erkl">
+              <span>Ich kann mein Ergebnis auf Plausibilität prüfen und begründen, ob es im Sachkontext sinnvoll ist.</span>
+            </label>
+          </fieldset>
+      </div>
+
+      <div class="scale-block">
+        <p class="scale-question">Wie sicher fühlst du dich insgesamt bei <strong>Sachaufgaben &amp; Modellieren</strong>?</p>
+        <div class="scale-options">
+          
+          <label class="scale-opt" for="scale_sachaufgaben_1">
+            <input type="radio" name="scale_sachaufgaben" id="scale_sachaufgaben_1" value="1" class="scale-input" data-topic="sachaufgaben">
+            <span class="scale-emoji">🙂</span>
+            <span class="scale-text">Das kann ich sicher erklären</span>
+          </label>
+          <label class="scale-opt" for="scale_sachaufgaben_2">
+            <input type="radio" name="scale_sachaufgaben" id="scale_sachaufgaben_2" value="2" class="scale-input" data-topic="sachaufgaben">
+            <span class="scale-emoji">🙂‍↕️</span>
+            <span class="scale-text">Das kann ich mit etwas Hilfe</span>
+          </label>
+          <label class="scale-opt" for="scale_sachaufgaben_3">
+            <input type="radio" name="scale_sachaufgaben" id="scale_sachaufgaben_3" value="3" class="scale-input" data-topic="sachaufgaben">
+            <span class="scale-emoji">😕</span>
+            <span class="scale-text">Das muss ich noch üben</span>
+          </label>
+          <label class="scale-opt" for="scale_sachaufgaben_4">
+            <input type="radio" name="scale_sachaufgaben" id="scale_sachaufgaben_4" value="4" class="scale-input" data-topic="sachaufgaben">
+            <span class="scale-emoji">🚫</span>
+            <span class="scale-text">Dieses Thema möchte ich eher nicht in der Prüfung wählen</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="notes-block">
+        <label for="notes_sachaufgaben">📝 Notizen zu diesem Thema (z. B. welche Aufgabentypen dir noch Probleme machen):</label>
+        <textarea id="notes_sachaufgaben" data-field="notes_sachaufgaben" rows="2" placeholder="Hier kannst du dir Stichpunkte machen ..."></textarea>
+      </div>
+
+      <div class="topic-progress" id="progress-sachaufgaben"></div>
+    </section>
+
+  <div class="big-field">
+    <h3>✏️ Persönliche Notizen</h3>
+    <p class="hint">Platz für alles, was dir sonst noch auffällt – z. B. Aufgabentypen, die dir Probleme machen,
+    oder Dinge, die du deine Lehrkraft fragen möchtest.</p>
+    <textarea id="notes_general" data-field="notes_general" rows="3" placeholder="Hier kannst du frei schreiben ..."></textarea>
+  </div>
+
+  <div class="big-field">
+    <h3>🎯 Diese Themen möchte ich in der Nachprüfung gerne zeigen</h3>
+    <p class="hint">Trage hier ein, mit welchen Themen du in der Prüfung punkten möchtest (neben den Pflichtthemen
+    Funktionen und Finanzmathematik).</p>
+    <textarea id="want_show" data-field="want_show" rows="3" placeholder="z. B. Trigonometrie und Wahrscheinlichkeit, weil ..."></textarea>
+  </div>
+
+  <div class="big-field">
+    <h3>📚 Diese Themen muss ich vor der Prüfung noch gezielt wiederholen</h3>
+    <p class="hint">Trage hier ein, was du dir bis zur Prüfung noch gezielt anschauen willst – denk an die
+    Pflichtthemen, falls sie noch nicht sicher sitzen!</p>
+    <textarea id="need_review" data-field="need_review" rows="3" placeholder="z. B. Tilgungspläne nochmal üben ..."></textarea>
+  </div>
+
+  <div class="eval-section" id="eval-section">
+    <h2>📊 Auswertung – wie gut bist du vorbereitet?</h2>
+    <p class="hint" style="margin-top:-6px;color:var(--ink-soft);font-size:0.88rem;">
+      Diese Übersicht aktualisiert sich automatisch, sobald du oben Haken setzt oder eine Einschätzung auswählst.
+    </p>
+    <table class="eval-table">
+      <thead>
+        <tr>
+          <th>Thema</th>
+          <th>Status</th>
+          <th>Abgehakte Kompetenzen</th>
+          <th>Deine Einschätzung</th>
+          <th>Empfehlung</th>
+        </tr>
+      </thead>
+      <tbody id="eval-body"></tbody>
+    </table>
+    <p id="eval-summary" style="margin-top:14px;font-size:0.92rem;"></p>
+  </div>
+
+  <footer class="no-print">
+    Hinweis: Deine Eingaben werden automatisch lokal in diesem Browser gespeichert (kein Datenversand ins Internet).
+    Öffnest du die Datei in einem anderen Browser oder auf einem anderen Gerät, beginnst du neu – nutze in diesem
+    Fall den Druck-Button, um deinen Stand als PDF zu sichern.
+  </footer>
+
+</div>
+
+<script>
+const TOPICS = [{"id": "funktionen", "title": "Funktionen", "kind": "pflicht"}, {"id": "finanzmathematik", "title": "Finanzmathematik", "kind": "pflicht"}, {"id": "geometrie", "title": "Geometrie – Raum und Form", "kind": "wahl"}, {"id": "trigonometrie", "title": "Trigonometrie", "kind": "wahl"}, {"id": "statistik", "title": "Statistik – Daten auswerten", "kind": "wahl"}, {"id": "wahrscheinlichkeit", "title": "Wahrscheinlichkeit – Zufall", "kind": "wahl"}, {"id": "prozent", "title": "Prozentrechnung", "kind": "quer"}, {"id": "gleichungen", "title": "Gleichungen, Terme & algebraische Verfahren", "kind": "quer"}, {"id": "sachaufgaben", "title": "Sachaufgaben & Modellieren", "kind": "quer"}];
+const STORAGE_KEY = "mathe_selbsteinschaetzung_v1";
+
+const KIND_LABEL = {
+  pflicht: "Pflicht",
+  wahl: "Wahlbereich",
+  quer: "Querschnitt"
+};
+const KIND_COLOR = {
+  pflicht: "#c0392b",
+  wahl: "#1f6f8b",
+  quer: "#6b5b95"
+};
+const KIND_BG = {
+  pflicht: "#fdecea",
+  wahl: "#e8f3f6",
+  quer: "#efeaf6"
+};
+
+function allInputs() {
+  return document.querySelectorAll('.comp-cb, .scale-input, textarea[data-field]');
+}
+
+function collectState() {
+  const state = { cb: {}, scale: {}, text: {} };
+  document.querySelectorAll('.comp-cb').forEach(cb => { state.cb[cb.id] = cb.checked; });
+  document.querySelectorAll('.scale-input').forEach(r => { if (r.checked) state.scale[r.name] = r.value; });
+  document.querySelectorAll('textarea[data-field]').forEach(t => { state.text[t.dataset.field] = t.value; });
+  return state;
+}
+
+function saveState() {
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(collectState()));
+  } catch (e) { /* localStorage evtl. nicht verfügbar - kein Problem */ }
+}
+
+function loadState() {
+  let raw = null;
+  try { raw = localStorage.getItem(STORAGE_KEY); } catch (e) { return; }
+  if (!raw) return;
+  let state;
+  try { state = JSON.parse(raw); } catch (e) { return; }
+  Object.entries(state.cb || {}).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el) el.checked = val;
+  });
+  Object.entries(state.scale || {}).forEach(([name, val]) => {
+    const el = document.querySelector(`input[name="${name}"][value="${val}"]`);
+    if (el) el.checked = true;
+  });
+  Object.entries(state.text || {}).forEach(([field, val]) => {
+    const el = document.querySelector(`textarea[data-field="${field}"]`);
+    if (el) el.value = val;
+  });
+}
+
+function topicStats(topicId) {
+  const cbs = Array.from(document.querySelectorAll(`.comp-cb[data-topic="${topicId}"]`));
+  const total = cbs.length;
+  const checked = cbs.filter(cb => cb.checked).length;
+  const scaleEl = document.querySelector(`input[name="scale_${topicId}"]:checked`);
+  const scale = scaleEl ? scaleEl.value : null;
+
+  // höchstes vollständig erreichtes Niveau
+  const levels = ["grund", "pruef", "erkl"];
+  const levelNames = {grund: "Grundlegend sicher", pruef: "Prüfungssicher", erkl: "Erklären/übertragen"};
+  let highest = "–";
+  for (const lvl of levels) {
+    const lvlCbs = cbs.filter(cb => cb.dataset.level === lvl);
+    if (lvlCbs.length > 0 && lvlCbs.every(cb => cb.checked)) {
+      highest = levelNames[lvl];
+    }
+  }
+  return { total, checked, scale, highest };
+}
+
+const SCALE_TEXT = {
+  "1": "Sicher erklären",
+  "2": "Mit etwas Hilfe",
+  "3": "Muss noch üben",
+  "4": "Möchte ich nicht wählen"
+};
+
+function recommendation(kind, scale) {
+  if (!scale) return { cls: "rec-open", text: "❔ Noch keine Einschätzung abgegeben" };
+  if (kind === "pflicht") {
+    if (scale === "1") return { cls: "rec-good", text: "✅ Bereit – wird sicher geprüft, du fühlst dich sicher" };
+    if (scale === "2") return { cls: "rec-ok", text: "🟡 Pflichtthema – vor der Prüfung noch festigen" };
+    if (scale === "3") return { cls: "rec-bad", text: "🔶 Pflichtthema – unbedingt intensiv wiederholen!" };
+    return { cls: "rec-bad", text: "⚠️ Achtung: Pflichtthema, kann nicht abgewählt werden – trotzdem vorbereiten!" };
+  }
+  if (scale === "1") return { cls: "rec-good", text: "✅ Gut geeignet für deine individuelle Prüfung" };
+  if (scale === "2") return { cls: "rec-ok", text: "🟡 Mit etwas Übung gut geeignet" };
+  if (scale === "3") return { cls: "rec-bad", text: "🔶 Noch nicht prüfungsreif – nur mit Verbesserung wählen" };
+  return { cls: "rec-bad", text: "⛔ Eher nicht für die Prüfung wählen" };
+}
+
+function updateAll() {
+  let answered = 0;
+  const tbody = document.getElementById("eval-body");
+  tbody.innerHTML = "";
+  const goodWahl = [];
+  const reviewNeeded = [];
+
+  TOPICS.forEach(t => {
+    const stats = topicStats(t.id);
+    if (stats.scale) answered++;
+
+    const pct = stats.total ? Math.round((stats.checked / stats.total) * 100) : 0;
+    const progEl = document.getElementById("progress-" + t.id);
+    if (progEl) {
+      progEl.textContent = `Kompetenzen abgehakt: ${stats.checked}/${stats.total} (${pct}%) – höchstes erreichtes Niveau laut Haken: ${stats.highest}`;
+    }
+
+    const rec = recommendation(t.kind, stats.scale);
+    const kindTag = `<span class="kind-tag" style="color:${KIND_COLOR[t.kind]};background:${KIND_BG[t.kind]}">${KIND_LABEL[t.kind]}</span>`;
+    const scaleText = stats.scale ? SCALE_TEXT[stats.scale] : "–";
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${t.title}</td><td>${kindTag}</td><td>${stats.checked}/${stats.total} (${pct}%)</td><td>${scaleText}</td><td class="${rec.cls}">${rec.text}</td>`;
+    tbody.appendChild(tr);
+
+    if (t.kind !== "pflicht" && (stats.scale === "1" || stats.scale === "2")) {
+      goodWahl.push(t.title);
+    }
+    if (stats.scale === "3" || (t.kind === "pflicht" && stats.scale && stats.scale !== "1")) {
+      reviewNeeded.push(t.title);
+    }
+  });
+
+  const pctAll = Math.round((answered / TOPICS.length) * 100);
+  document.getElementById("progress-fill").style.width = pctAll + "%";
+  document.getElementById("progress-label").textContent = `${answered} / ${TOPICS.length} Themen eingeschätzt`;
+
+  const summaryEl = document.getElementById("eval-summary");
+  if (answered === 0) {
+    summaryEl.textContent = "Schätze oben jedes Thema ein, damit hier eine Empfehlung erscheint.";
+  } else {
+    let s = "";
+    if (goodWahl.length) {
+      s += `Diese Wahl-/Querschnittsthemen passen aktuell gut zu deiner individuellen Prüfung: <strong>${goodWahl.join(", ")}</strong>. `;
+    }
+    if (reviewNeeded.length) {
+      s += `Diese Themen solltest du vor der Prüfung noch gezielt wiederholen: <strong>${reviewNeeded.join(", ")}</strong>.`;
+    }
+    if (!s) { s = "Bisher noch keine eindeutige Tendenz erkennbar – schätze weitere Themen ein."; }
+    summaryEl.innerHTML = s;
+  }
+
+  window._lastGoodWahl = goodWahl;
+  window._lastReviewNeeded = reviewNeeded;
+  saveState();
+}
+
+function suggestShow() {
+  const list = (window._lastGoodWahl || []).slice();
+  const text = list.length
+    ? "Ich möchte zeigen: " + list.join(", ") + " (zusätzlich zu den Pflichtthemen Funktionen und Finanzmathematik)."
+    : "Noch keine klare Tendenz – bitte erst oben Einschätzungen abgeben.";
+  const el = document.getElementById("want_show");
+  if (el.value.trim() && !confirm("Vorhandenen Text im Feld ersetzen?")) return;
+  el.value = text;
+  saveState();
+}
+
+function suggestReview() {
+  const list = (window._lastReviewNeeded || []).slice();
+  const text = list.length
+    ? "Noch gezielt wiederholen: " + list.join(", ") + "."
+    : "Aktuell kein dringender Wiederholungsbedarf erkennbar – weiter so!";
+  const el = document.getElementById("need_review");
+  if (el.value.trim() && !confirm("Vorhandenen Text im Feld ersetzen?")) return;
+  el.value = text;
+  saveState();
+}
+
+function resetAll() {
+  if (!confirm("Wirklich alle Eingaben auf dieser Seite zurücksetzen? Das kann nicht rückgängig gemacht werden.")) return;
+  document.querySelectorAll('.comp-cb').forEach(cb => cb.checked = false);
+  document.querySelectorAll('.scale-input').forEach(r => r.checked = false);
+  document.querySelectorAll('textarea[data-field]').forEach(t => t.value = "");
+  try { localStorage.removeItem(STORAGE_KEY); } catch (e) {}
+  updateAll();
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  loadState();
+  updateAll();
+  document.body.addEventListener("change", updateAll);
+  document.body.addEventListener("input", (e) => {
+    if (e.target.tagName === "TEXTAREA") saveState();
+  });
+});
+</script>
+
+</body>
+</html>
